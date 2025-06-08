@@ -85,12 +85,9 @@ public class XrpcClientTests
         Assert.Equal("api.bsky.app", uri.Host);
         Assert.Equal("/xrpc/test/endpoint", uri.AbsolutePath);
         Assert.Contains("key1=value1", uri.Query);
+        // Check that the space in value2 is URL-encoded
+        Assert.Contains("key2=value%20with%20spaces", uri.Query);
         
-        // For the space-containing parameter, use a more flexible approach
-        // that doesn't depend on the exact encoding mechanism
-        Assert.Contains("key2=", uri.Query);
-        Assert.Contains("value", uri.Query);
-        Assert.Contains("spaces", uri.Query);
     }
 
     [Fact]

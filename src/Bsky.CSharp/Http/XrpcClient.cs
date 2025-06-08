@@ -83,9 +83,9 @@ public class XrpcClient
                 if (query.Length > 0)
                     query.Append('&');
                 
-                query.Append(Uri.EscapeDataString(param.Key));
+                query.Append(Uri.EscapeDataString(param.Key).Replace(" ", "%20")); // Encode spaces as %20
                 query.Append('=');
-                query.Append(Uri.EscapeDataString(param.Value));
+                query.Append(Uri.EscapeDataString(param.Value).Replace(" ", "%20")); // Encode spaces as %20
             }
             
             uriBuilder.Query = query.ToString();
