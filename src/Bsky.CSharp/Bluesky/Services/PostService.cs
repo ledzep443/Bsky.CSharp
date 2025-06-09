@@ -1,0 +1,310 @@
+using System.Net.Http.Headers;
+using System.Text.Json.Serialization;
+using Bsky.CSharp.AtProto.Models;
+using Bsky.CSharp.AtProto.Services;
+using Bsky.CSharp.Bluesky.Models;
+using Bsky.CSharp.Http;
+
+namespace Bsky.CSharp.Bluesky.Services;
+
+/// <summary>
+/// Service for creating and managing posts on Bluesky.
+/// </summary>
+public class PostService
+{
+    private readonly XrpcClient _client;
+    private readonly BlobService _blobService;
+    private readonly RepositoryService _repoService;
+    private const string PostCollectionId = "app.bsky.feed.post";
+    
+    /// <summary>
+    /// Creates a new post service.
+    /// </summary>
+    /// <param name="client">The XRPC client to use for API requests.</param>
+    /// <param name="blobService">The blob service for uploading media.</param>
+    /// <param name="repoService">The repository service for creating records.</param>
+    public PostService(XrpcClient client, BlobService blobService, RepositoryService repoService)
+    {
+        _client = client;
+        _blobService = blobService;
+        _repoService = repoService;
+    }
+    
+    /// <summary>
+    /// Creates a new text post.
+    /// </summary>
+    /// <param name="text">The text content of the post.</param>
+    /// <param name="replyTo">Optional reference to a post being replied to.</param>
+    /// <param name="languageTags">Optional language tags for the post.</param>
+    /// <param name="cancellationToken">A token to cancel the request.</param>
+    /// <returns>A reference to the created post.</returns>
+    public async Task<RecordRef> CreateTextPostAsync(
+        string text,
+        ReplyRef? replyTo = null,
+        IEnumerable<string>? languageTags = null,
+        CancellationToken cancellationToken = default)
+    {
+        var record = CreatePostRecord(text, null, replyTo, languageTags);
+        var did = await GetUserDidAsync(cancellationToken);
+        
+        return await _repoService.CreateRecordAsync(
+            did,
+            PostCollectionId,
+            record,
+            null,
+            true,
+            cancellationToken);
+    }
+    
+    /// <summary>
+    /// Creates a new post with images.
+    /// </summary>
+    /// <param name="text">The text content of the post.</param>
+    /// <param name="images">The images to attach to the post.</param>
+    /// <param name="replyTo">Optional reference to a post being replied to.</param>
+    /// <param name="languageTags">Optional language tags for the post.</param>
+    /// <param name="cancellationToken">A token to cancel the request.</param>
+    /// <returns>A reference to the created post.</returns>
+    public async Task<RecordRef> CreateImagePostAsync(
+        string text,
+        IEnumerable<ImageUpload> images,
+        ReplyRef? replyTo = null,
+        IEnumerable<string>? languageTags = null,
+        CancellationToken cancellationToken = default)
+    {
+        var imagesList = images.ToList();
+        if (!imagesList.Any())
+        {
+            throw new ArgumentException("At least one image must be provided", nameof(images));
+        }
+        
+        // Upload each image
+        var uploadedImages = new List<Image>();
+        foreach (var image in imagesList)
+        {
+            var blob = await UploadImageAsync(image.Data, image.ContentType, cancellationToken);
+            uploadedImages.Add(new Image
+            {
+                ImageUrl = blob.Blob.Ref!.Link,
+                Alt = image.AltText ?? string.Empty,
+                AspectRatio = image.AspectRatio
+            });
+        }
+        
+        // Create embed for images
+        var embed = new EmbedImages
+        {
+            Type = "app.bsky.embed.images",
+            Images = uploadedImages
+        };
+        
+        var record = CreatePostRecord(text, embed, replyTo, languageTags);
+        var did = await GetUserDidAsync(cancellationToken);
+        
+        return await _repoService.CreateRecordAsync(
+            did,
+            PostCollectionId,
+            record,
+            null,
+            true,
+            cancellationToken);
+    }
+    
+    /// <summary>
+    /// Creates a new post with an external link.
+    /// </summary>
+    /// <param name="text">The text content of the post.</param>
+    /// <param name="url">The external URL to link to.</param>
+    /// <param name="title">Optional title for the link preview.</param>
+    /// <param name="description">Optional description for the link preview.</param>
+    /// <param name="thumbnailData">Optional thumbnail image data for the link.</param>
+    /// <param name="thumbnailContentType">Content type of the thumbnail image.</param>
+    /// <param name="replyTo">Optional reference to a post being replied to.</param>
+    /// <param name="languageTags">Optional language tags for the post.</param>
+    /// <param name="cancellationToken">A token to cancel the request.</param>
+    /// <returns>A reference to the created post.</returns>
+    public async Task<RecordRef> CreateLinkPostAsync(
+        string text,
+        string url,
+        string? title = null,
+        string? description = null,
+        byte[]? thumbnailData = null,
+        string? thumbnailContentType = null,
+        ReplyRef? replyTo = null,
+        IEnumerable<string>? languageTags = null,
+        CancellationToken cancellationToken = default)
+    {
+        // Create external embed info
+        var externalInfo = new EmbedExternalInfo
+        {
+            Uri = url,
+            Title = title,
+            Description = description
+        };
+        
+        // Upload thumbnail if provided
+        if (thumbnailData != null && !string.IsNullOrEmpty(thumbnailContentType))
+        {
+            var blob = await UploadImageAsync(thumbnailData, thumbnailContentType, cancellationToken);
+            externalInfo.Thumb = new EmbedExternalThumb
+            {
+                Uri = blob.Blob.Ref!.Link,
+                MimeType = thumbnailContentType
+            };
+        }
+        
+        // Create embed for external link
+        var embed = new EmbedExternal
+        {
+            Type = "app.bsky.embed.external",
+            External = externalInfo
+        };
+        
+        var record = CreatePostRecord(text, embed, replyTo, languageTags);
+        var did = await GetUserDidAsync(cancellationToken);
+        
+        return await _repoService.CreateRecordAsync(
+            did,
+            PostCollectionId,
+            record,
+            null,
+            true,
+            cancellationToken);
+    }
+    
+    /// <summary>
+    /// Gets a post by its URI.
+    /// </summary>
+    /// <param name="uri">The URI of the post to retrieve.</param>
+    /// <param name="cancellationToken">A token to cancel the request.</param>
+    /// <returns>The post data.</returns>
+    public async Task<Post> GetPostAsync(string uri, CancellationToken cancellationToken = default)
+    {
+        const string endpoint = "app.bsky.feed.getPostThread";
+        var parameters = new Dictionary<string, string>
+        {
+            ["uri"] = uri
+        };
+        
+        var response = await _client.GetAsync<ThreadResponse>(endpoint, parameters, cancellationToken);
+        if (response.Thread is PostThreadView postThread)
+        {
+            return postThread.Post;
+        }
+        
+        throw new InvalidOperationException($"Post not found or inaccessible: {uri}");
+    }
+    
+    /// <summary>
+    /// Deletes a post.
+    /// </summary>
+    /// <param name="uri">The URI of the post to delete.</param>
+    /// <param name="cancellationToken">A token to cancel the request.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public async Task DeletePostAsync(string uri, CancellationToken cancellationToken = default)
+    {
+        var parts = uri.Split('/');
+        if (parts.Length < 4)
+        {
+            throw new ArgumentException("Invalid post URI format", nameof(uri));
+        }
+        
+        var repo = parts[2];
+        var rkey = parts[4];
+        
+        await _repoService.DeleteRecordAsync(
+            repo,
+            PostCollectionId,
+            rkey,
+            cancellationToken);
+    }
+    
+    private PostRecord CreatePostRecord(
+        string text,
+        Embed? embed = null,
+        ReplyRef? replyTo = null,
+        IEnumerable<string>? languageTags = null)
+    {
+        Reply? reply = null;
+        if (replyTo != null)
+        {
+            reply = new Reply
+            {
+                Root = replyTo,
+                Parent = replyTo
+            };
+        }
+        
+        return new PostRecord
+        {
+            Text = text,
+            CreatedAt = DateTime.UtcNow,
+            Embed = embed,
+            Reply = reply,
+            Langs = languageTags?.ToList()
+        };
+    }
+    
+    private async Task<BlobRef> UploadImageAsync(byte[] imageData, string contentType, CancellationToken cancellationToken)
+    {
+        return await _blobService.UploadBlobAsync(imageData, contentType, cancellationToken);
+    }
+    
+    private async Task<string> GetUserDidAsync(CancellationToken cancellationToken)
+    {
+        const string endpoint = "com.atproto.server.getSession";
+        var session = await _client.GetAsync<SessionInfo>(endpoint, null, cancellationToken);
+        return session.Did;
+    }
+}
+
+/// <summary>
+/// Information about an image to upload.
+/// </summary>
+public class ImageUpload
+{
+    /// <summary>
+    /// The binary data of the image.
+    /// </summary>
+    public required byte[] Data { get; init; }
+    
+    /// <summary>
+    /// The MIME type of the image.
+    /// </summary>
+    public required string ContentType { get; init; }
+    
+    /// <summary>
+    /// Alternative text for the image.
+    /// </summary>
+    public string? AltText { get; init; }
+    
+    /// <summary>
+    /// The aspect ratio of the image.
+    /// </summary>
+    public AspectRatio? AspectRatio { get; init; }
+}
+
+/// <summary>
+/// Response from the getPostThread endpoint.
+/// </summary>
+public class ThreadResponse
+{
+    /// <summary>
+    /// The thread containing the post.
+    /// </summary>
+    [JsonPropertyName("thread")]
+    public required ThreadView Thread { get; init; }
+}
+
+/// <summary>
+/// Base class for thread views.
+/// </summary>
+[JsonConverter(typeof(ThreadViewConverter))]
+public abstract class ThreadView
+{
+    /// <summary>
+    /// The type of thread view.
+    /// </summary>
+    [JsonPropertyName("$type")]
+    public required string Type { get; init; }
+}

@@ -97,7 +97,7 @@ public record EmbedExternalInfo
     /// Thumbnail image information.
     /// </summary>
     [JsonPropertyName("thumb")]
-    public EmbedExternalThumb? Thumb { get; init; }
+    public EmbedExternalThumb? Thumb { get; set; }
 }
 
 /// <summary>
