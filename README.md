@@ -30,20 +30,52 @@ dotnet add package Bsky.CSharp
 
 ## Quick Start
 
+### Setting up Dependency Injection
+
+```csharp
+using Bsky.CSharp.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+
+// Set up the service collection
+var services = new ServiceCollection();
+
+// Add Bluesky services to the DI container
+services.AddBluesky();
+
+// Build the service provider
+var serviceProvider = services.BuildServiceProvider();
+
+// In a real application, you would typically use constructor injection rather than
+// directly accessing the service provider, as shown in the examples below
+```
+
 ### Authentication
 
 ```csharp
-using Bsky.CSharp.Http;
 using Bsky.CSharp.AtProto.Services;
+using Bsky.CSharp.Http;
 
-// Create the XRPC client with the Bluesky API endpoint
+// Using manual instantiation
 var client = new XrpcClient("https://bsky.social");
-
-// Create the authentication service
 var authService = new AuthenticationService(client);
-
-// Login and authenticate
 var session = await authService.CreateSessionAsync("yourhandle.bsky.social", "yourpassword");
+
+// Using constructor injection in a class
+public class BlueskyAuthenticationService
+{
+    private readonly AuthenticationService _authService;
+    
+    // Inject the AuthenticationService through the constructor
+    public BlueskyAuthenticationService(AuthenticationService authService)
+    {
+        _authService = authService;
+    }
+    
+    public async Task<SessionInfo> LoginAsync(string handle, string password)
+    {
+        return await _authService.CreateSessionAsync(handle, password);
+    }
+}
 ```
 
 ### Creating a Text Post
@@ -51,13 +83,28 @@ var session = await authService.CreateSessionAsync("yourhandle.bsky.social", "yo
 ```csharp
 using Bsky.CSharp.Bluesky.Services;
 
-// Create the post service (requires authenticated client)
+// Using manual instantiation
 var blobService = new BlobService(client);
 var repoService = new RepositoryService(client);
 var postService = new PostService(client, blobService, repoService);
-
-// Create a simple text post
 var postRef = await postService.CreateTextPostAsync("Hello from Bsky.CSharp!");
+
+// Using constructor injection in a class
+public class BlueskyPostingService
+{
+    private readonly IPostService _postService;
+    
+    // Inject the IPostService through the constructor
+    public BlueskyPostingService(IPostService postService)
+    {
+        _postService = postService;
+    }
+    
+    public async Task<RecordRef> CreateTextPostAsync(string text)
+    {
+        return await _postService.CreateTextPostAsync(text);
+    }
+}
 ```
 
 ### Creating an Image Post
@@ -73,26 +120,82 @@ var image = new ImageUpload
     AltText = "Description of the image"
 };
 
-// Create a post with an image
+// Using manual instantiation
 var postRef = await postService.CreateImagePostAsync(
     "Check out this photo!", 
     new[] { image }
 );
+
+// Using constructor injection in a class
+public class BlueskyMediaService
+{
+    private readonly IPostService _postService;
+    
+    public BlueskyMediaService(IPostService postService)
+    {
+        _postService = postService;
+    }
+    
+    public async Task<RecordRef> CreateImagePostAsync(string text, ImageUpload[] images)
+    {
+        return await _postService.CreateImagePostAsync(text, images);
+    }
+}
+
+// Usage in an application
+public class ImageUploaderComponent
+{
+    private readonly BlueskyMediaService _mediaService;
+    
+    public ImageUploaderComponent(BlueskyMediaService mediaService)
+    {
+        _mediaService = mediaService;
+    }
+    
+    public async Task UploadImageAsync(byte[] imageData, string description)
+    {
+        var image = new ImageUpload
+        {
+            Data = imageData,
+            ContentType = "image/jpeg",
+            AltText = description
+        };
+        
+        await _mediaService.CreateImagePostAsync("Check out this photo!", new[] { image });
+    }
+}
 ```
 
 ### Getting a User Profile
 
 ```csharp
+// Using manual instantiation
 var identityService = new IdentityService(client);
 var userService = new UserService(client, repoService, blobService, identityService);
-
-// Get a user's profile
 var profile = await userService.GetProfileAsync("user.bsky.social");
 
-// Display user information
-Console.WriteLine($"Display Name: {profile.DisplayName}");
-Console.WriteLine($"Description: {profile.Description}");
-Console.WriteLine($"Followers: {profile.FollowersCount}");
+// Using constructor injection in a class
+public class BlueskyUserService
+{
+    private readonly IUserService _userService;
+    
+    public BlueskyUserService(IUserService userService)
+    {
+        _userService = userService;
+    }
+    
+    public async Task<UserProfile> GetUserProfileAsync(string handle)
+    {
+        var profile = await _userService.GetProfileAsync(handle);
+        
+        // Process profile data
+        Console.WriteLine($"Display Name: {profile.DisplayName}");
+        Console.WriteLine($"Description: {profile.Description}");
+        Console.WriteLine($"Followers: {profile.FollowersCount}");
+        
+        return profile;
+    }
+}
 ```
 
 ## Main Components
@@ -112,6 +215,26 @@ Console.WriteLine($"Followers: {profile.FollowersCount}");
 - `UserService`: Work with user profiles and relationships
 - `FeedService`: Access user feeds and timelines
 - `NotificationService`: Handle user notifications
+
+## Data Models
+
+### ImageUpload
+
+The `ImageUpload` class represents an image to be uploaded with a post:
+
+```csharp
+public class ImageUpload
+{
+    // The binary data of the image
+    public required byte[] Data { get; init; }
+    
+    // The MIME type of the image (e.g., "image/jpeg", "image/png")
+    public required string ContentType { get; init; }
+    
+    // Alternative text for the image for accessibility
+    public string? AltText { get; init; }
+}
+```
 
 ## Contributing
 
