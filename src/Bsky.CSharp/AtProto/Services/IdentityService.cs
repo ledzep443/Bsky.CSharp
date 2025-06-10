@@ -38,7 +38,8 @@ public class IdentityService
         var response = await _client.GetAsync<Did>(
             ResolveHandleEndpoint, 
             parameters, 
-            cancellationToken);
+            cancellationToken)
+            .ConfigureAwait(false);
         
         return response.DidValue;
     }

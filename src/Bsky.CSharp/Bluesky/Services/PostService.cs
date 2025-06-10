@@ -8,28 +8,10 @@ using Bsky.CSharp.Http;
 namespace Bsky.CSharp.Bluesky.Services;
 
 /// <summary>
-/// Service for creating and managing posts on Bluesky.
+/// Interface for creating and managing posts on Bluesky.
 /// </summary>
-public class PostService
+public interface IPostService
 {
-    private readonly XrpcClient _client;
-    private readonly BlobService _blobService;
-    private readonly RepositoryService _repoService;
-    private const string PostCollectionId = "app.bsky.feed.post";
-    
-    /// <summary>
-    /// Creates a new post service.
-    /// </summary>
-    /// <param name="client">The XRPC client to use for API requests.</param>
-    /// <param name="blobService">The blob service for uploading media.</param>
-    /// <param name="repoService">The repository service for creating records.</param>
-    public PostService(XrpcClient client, BlobService blobService, RepositoryService repoService)
-    {
-        _client = client;
-        _blobService = blobService;
-        _repoService = repoService;
-    }
-    
     /// <summary>
     /// Creates a new text post.
     /// </summary>
@@ -38,6 +20,87 @@ public class PostService
     /// <param name="languageTags">Optional language tags for the post.</param>
     /// <param name="cancellationToken">A token to cancel the request.</param>
     /// <returns>A reference to the created post.</returns>
+    Task<RecordRef> CreateTextPostAsync(
+        string text,
+        ReplyRef? replyTo = null,
+        IEnumerable<string>? languageTags = null,
+        CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Creates a new post with images.
+    /// </summary>
+    /// <param name="text">The text content of the post.</param>
+    /// <param name="images">The images to attach to the post.</param>
+    /// <param name="replyTo">Optional reference to a post being replied to.</param>
+    /// <param name="languageTags">Optional language tags for the post.</param>
+    /// <param name="cancellationToken">A token to cancel the request.</param>
+    /// <returns>A reference to the created post.</returns>
+    Task<RecordRef> CreateImagePostAsync(
+        string text,
+        IEnumerable<ImageUpload> images,
+        ReplyRef? replyTo = null,
+        IEnumerable<string>? languageTags = null,
+        CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Creates a new post with an external link.
+    /// </summary>
+    /// <param name="text">The text content of the post.</param>
+    /// <param name="url">The external URL to link to.</param>
+    /// <param name="title">Optional title for the link preview.</param>
+    /// <param name="description">Optional description for the link preview.</param>
+    /// <param name="thumbnailData">Optional thumbnail image data for the link.</param>
+    /// <param name="thumbnailContentType">Content type of the thumbnail image.</param>
+    /// <param name="replyTo">Optional reference to a post being replied to.</param>
+    /// <param name="languageTags">Optional language tags for the post.</param>
+    /// <param name="cancellationToken">A token to cancel the request.</param>
+    /// <returns>A reference to the created post.</returns>
+    Task<RecordRef> CreateLinkPostAsync(
+        string text,
+        string url,
+        string? title = null,
+        string? description = null,
+        byte[]? thumbnailData = null,
+        string? thumbnailContentType = null,
+        ReplyRef? replyTo = null,
+        IEnumerable<string>? languageTags = null,
+        CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Gets a post by its URI.
+    /// </summary>
+    /// <param name="uri">The URI of the post to retrieve.</param>
+    /// <param name="cancellationToken">A token to cancel the request.</param>
+    /// <returns>The post data.</returns>
+    Task<Post> GetPostAsync(string uri, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Deletes a post.
+    /// </summary>
+    /// <param name="uri">The URI of the post to delete.</param>
+    /// <param name="cancellationToken">A token to cancel the request.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task DeletePostAsync(string uri, CancellationToken cancellationToken = default);
+}
+
+
+
+public class PostService : IPostService
+{
+    private readonly XrpcClient _client;
+    private readonly BlobService _blobService;
+    private readonly RepositoryService _repoService;
+    private const string PostCollectionId = "app.bsky.feed.post";
+    
+    
+    public PostService(XrpcClient client, BlobService blobService, RepositoryService repoService)
+    {
+        _client = client;
+        _blobService = blobService;
+        _repoService = repoService;
+    }
+    
+    /// <inheritdoc />
     public async Task<RecordRef> CreateTextPostAsync(
         string text,
         ReplyRef? replyTo = null,
@@ -53,18 +116,11 @@ public class PostService
             record,
             null,
             true,
-            cancellationToken);
+            cancellationToken)
+            .ConfigureAwait(false);
     }
     
-    /// <summary>
-    /// Creates a new post with images.
-    /// </summary>
-    /// <param name="text">The text content of the post.</param>
-    /// <param name="images">The images to attach to the post.</param>
-    /// <param name="replyTo">Optional reference to a post being replied to.</param>
-    /// <param name="languageTags">Optional language tags for the post.</param>
-    /// <param name="cancellationToken">A token to cancel the request.</param>
-    /// <returns>A reference to the created post.</returns>
+    /// <inheritdoc />
     public async Task<RecordRef> CreateImagePostAsync(
         string text,
         IEnumerable<ImageUpload> images,
@@ -107,22 +163,11 @@ public class PostService
             record,
             null,
             true,
-            cancellationToken);
+            cancellationToken)
+            .ConfigureAwait(false);
     }
     
-    /// <summary>
-    /// Creates a new post with an external link.
-    /// </summary>
-    /// <param name="text">The text content of the post.</param>
-    /// <param name="url">The external URL to link to.</param>
-    /// <param name="title">Optional title for the link preview.</param>
-    /// <param name="description">Optional description for the link preview.</param>
-    /// <param name="thumbnailData">Optional thumbnail image data for the link.</param>
-    /// <param name="thumbnailContentType">Content type of the thumbnail image.</param>
-    /// <param name="replyTo">Optional reference to a post being replied to.</param>
-    /// <param name="languageTags">Optional language tags for the post.</param>
-    /// <param name="cancellationToken">A token to cancel the request.</param>
-    /// <returns>A reference to the created post.</returns>
+    /// <inheritdoc />
     public async Task<RecordRef> CreateLinkPostAsync(
         string text,
         string url,
@@ -169,15 +214,11 @@ public class PostService
             record,
             null,
             true,
-            cancellationToken);
+            cancellationToken)
+            .ConfigureAwait(false);
     }
     
-    /// <summary>
-    /// Gets a post by its URI.
-    /// </summary>
-    /// <param name="uri">The URI of the post to retrieve.</param>
-    /// <param name="cancellationToken">A token to cancel the request.</param>
-    /// <returns>The post data.</returns>
+    /// <inheritdoc />
     public async Task<Post> GetPostAsync(string uri, CancellationToken cancellationToken = default)
     {
         const string endpoint = "app.bsky.feed.getPostThread";
@@ -186,7 +227,7 @@ public class PostService
             ["uri"] = uri
         };
         
-        var response = await _client.GetAsync<ThreadResponse>(endpoint, parameters, cancellationToken);
+        var response = await _client.GetAsync<ThreadResponse>(endpoint, parameters, cancellationToken).ConfigureAwait(false);
         if (response.Thread is PostThreadView postThread)
         {
             return postThread.Post;
@@ -195,12 +236,7 @@ public class PostService
         throw new InvalidOperationException($"Post not found or inaccessible: {uri}");
     }
     
-    /// <summary>
-    /// Deletes a post.
-    /// </summary>
-    /// <param name="uri">The URI of the post to delete.</param>
-    /// <param name="cancellationToken">A token to cancel the request.</param>
-    /// <returns>A task representing the asynchronous operation.</returns>
+    /// <inheritdoc />
     public async Task DeletePostAsync(string uri, CancellationToken cancellationToken = default)
     {
         var parts = uri.Split('/');
@@ -216,7 +252,8 @@ public class PostService
             repo,
             PostCollectionId,
             rkey,
-            cancellationToken);
+            cancellationToken)
+            .ConfigureAwait(false);
     }
     
     private PostRecord CreatePostRecord(
@@ -247,13 +284,13 @@ public class PostService
     
     private async Task<BlobRef> UploadImageAsync(byte[] imageData, string contentType, CancellationToken cancellationToken)
     {
-        return await _blobService.UploadBlobAsync(imageData, contentType, cancellationToken);
+        return await _blobService.UploadBlobAsync(imageData, contentType, cancellationToken).ConfigureAwait(false);
     }
     
     private async Task<string> GetUserDidAsync(CancellationToken cancellationToken)
     {
         const string endpoint = "com.atproto.server.getSession";
-        var session = await _client.GetAsync<SessionInfo>(endpoint, null, cancellationToken);
+        var session = await _client.GetAsync<SessionInfo>(endpoint, null, cancellationToken).ConfigureAwait(false);
         return session.Did;
     }
 }

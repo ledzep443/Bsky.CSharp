@@ -30,6 +30,7 @@ public class ServerService
         return await _client.GetAsync<ServerInfo>(
             DescribeServerEndpoint,
             null,
-            cancellationToken);
+            cancellationToken)
+            .ConfigureAwait(false);
     }
 }

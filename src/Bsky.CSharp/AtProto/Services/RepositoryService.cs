@@ -54,7 +54,8 @@ public class RepositoryService
         return await _client.PostAsync<object, RecordRef>(
             CreateRecordEndpoint, 
             request, 
-            cancellationToken);
+            cancellationToken)
+            .ConfigureAwait(false);
     }
     
     /// <summary>
@@ -81,7 +82,8 @@ public class RepositoryService
         return await _client.GetAsync<Record>(
             GetRecordEndpoint, 
             parameters, 
-            cancellationToken);
+            cancellationToken)
+            .ConfigureAwait(false);
     }
     
     /// <summary>
@@ -119,7 +121,8 @@ public class RepositoryService
         return await _client.GetAsync<Records>(
             ListRecordsEndpoint, 
             parameters, 
-            cancellationToken);
+            cancellationToken)
+            .ConfigureAwait(false);
     }
     
     /// <summary>
@@ -146,7 +149,8 @@ public class RepositoryService
         await _client.PostAsync<object>(
             DeleteRecordEndpoint, 
             request, 
-            cancellationToken);
+            cancellationToken)
+            .ConfigureAwait(false);
     }
     
     /// <summary>
@@ -179,6 +183,7 @@ public class RepositoryService
         await _client.PostAsync<object>(
             PutRecordEndpoint, 
             request, 
-            cancellationToken);
+            cancellationToken)
+            .ConfigureAwait(false);
     }
 }

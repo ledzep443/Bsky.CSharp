@@ -40,7 +40,8 @@ public class AuthenticationService
         var response = await _client.PostAsync<SessionCreateRequest, ServiceAuthToken>(
             CreateSessionEndpoint, 
             request, 
-            cancellationToken);
+            cancellationToken)
+            .ConfigureAwait(false);
         
         // Set the access token in the client for subsequent requests
         _client.SetAuth(response.AccessToken);
@@ -66,7 +67,8 @@ public class AuthenticationService
             
             var response = await _client.PostAsync<ServiceAuthToken>(
                 RefreshSessionEndpoint,
-                cancellationToken);
+                cancellationToken)
+                .ConfigureAwait(false);
             
             // Set the new access token in the client
             _client.SetAuth(response.AccessToken);
@@ -92,7 +94,7 @@ public class AuthenticationService
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task DeleteSessionAsync(CancellationToken cancellationToken = default)
     {
-        await _client.PostAsync<object>(DeleteSessionEndpoint, new {}, cancellationToken);
+        await _client.PostAsync<object>(DeleteSessionEndpoint, new {}, cancellationToken).ConfigureAwait(false);
         _client.ClearAuth();
     }
 }

@@ -6,7 +6,7 @@ namespace Bsky.CSharp.AtProto.Services;
 /// <summary>
 /// Service for working with blobs in the AT Protocol.
 /// </summary>
-public class BlobService
+public class BlobService : IBlobService
 {
     private readonly XrpcClient _client;
     private const string UploadBlobEndpoint = "com.atproto.blob.upload";
@@ -46,8 +46,8 @@ public class BlobService
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _client.GetAccessToken());
         }
         
-        var response = await _client.SendRawRequestAsync(request, cancellationToken);
-        var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        var response = await _client.SendRawRequestAsync(request, cancellationToken).ConfigureAwait(false);
+        var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         
         var options = new System.Text.Json.JsonSerializerOptions
         {
@@ -55,7 +55,7 @@ public class BlobService
             WriteIndented = false
         };
         
-        var result = await System.Text.Json.JsonSerializer.DeserializeAsync<BlobRef>(responseStream, options, cancellationToken);
+        var result = await System.Text.Json.JsonSerializer.DeserializeAsync<BlobRef>(responseStream, options, cancellationToken).ConfigureAwait(false);
         
         if (result == null)
         {
@@ -63,5 +63,10 @@ public class BlobService
         }
         
         return result;
+    }
+
+    public async Task<(byte[] Data, string ContentType)> GetBlobAsync(string did, string cid, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
     }
 }

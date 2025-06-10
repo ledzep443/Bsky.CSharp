@@ -7,7 +7,7 @@ namespace Bsky.CSharp.Http;
 /// <summary>
 /// Client for making XRPC requests to AT Protocol servers.
 /// </summary>
-public class XrpcClient
+public class XrpcClient : IXrpcClient
 {
     private readonly HttpClient _httpClient;
     private readonly JsonSerializerOptions _jsonSerializerOptions;

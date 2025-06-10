@@ -7,9 +7,81 @@ using Bsky.CSharp.AtProto.Models;
 namespace Bsky.CSharp.Bluesky.Services;
 
 /// <summary>
+/// Interface for managing user accounts and profiles on Bluesky.
+/// </summary>
+public interface IUserService
+{
+    /// <summary>
+    /// Gets the current user's profile.
+    /// </summary>
+    /// <param name="cancellationToken">A token to cancel the request.</param>
+    /// <returns>The user's profile.</returns>
+    Task<Actor> GetMyProfileAsync(CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Gets a user's profile by handle or DID.
+    /// </summary>
+    /// <param name="handleOrDid">The handle or DID of the user.</param>
+    /// <param name="cancellationToken">A token to cancel the request.</param>
+    /// <returns>The user's profile.</returns>
+    Task<Actor> GetProfileAsync(string handleOrDid, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Updates the current user's profile.
+    /// </summary>
+    /// <param name="update">The profile update information.</param>
+    /// <param name="cancellationToken">A token to cancel the request.</param>
+    /// <returns>A reference to the updated profile record.</returns>
+    Task<ProfileRecord> UpdateProfileAsync(ProfileUpdate update, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Searches for users by handle or display name.
+    /// </summary>
+    /// <param name="query">The search query.</param>
+    /// <param name="limit">Maximum number of results to return.</param>
+    /// <param name="cursor">Pagination cursor from a previous request.</param>
+    /// <param name="cancellationToken">A token to cancel the request.</param>
+    /// <returns>A list of matching users.</returns>
+    Task<ActorsResponse> SearchUsersAsync(
+        string query,
+        int? limit = null,
+        string? cursor = null,
+        CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Gets a list of users that the specified user follows.
+    /// </summary>
+    /// <param name="user">The handle or DID of the user.</param>
+    /// <param name="limit">Maximum number of results to return.</param>
+    /// <param name="cursor">Pagination cursor from a previous request.</param>
+    /// <param name="cancellationToken">A token to cancel the request.</param>
+    /// <returns>A list of users that the specified user follows.</returns>
+    Task<ActorsResponse> GetFollowsAsync(
+        string user,
+        int? limit = null,
+        string? cursor = null,
+        CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Gets a list of users that follow the specified user.
+    /// </summary>
+    /// <param name="user">The handle or DID of the user.</param>
+    /// <param name="limit">Maximum number of results to return.</param>
+    /// <param name="cursor">Pagination cursor from a previous request.</param>
+    /// <param name="cancellationToken">A token to cancel the request.</param>
+    /// <returns>A list of users that follow the specified user.</returns>
+    Task<ActorsResponse> GetFollowersAsync(
+        string user,
+        int? limit = null,
+        string? cursor = null,
+        CancellationToken cancellationToken = default);
+}
+
+
+/// <summary>
 /// Service for managing user accounts and profiles on Bluesky.
 /// </summary>
-public class UserService
+public class UserService : IUserService
 {
     private readonly XrpcClient _client;
     private readonly RepositoryService _repoService;
@@ -61,7 +133,7 @@ public class UserService
             ["actor"] = handleOrDid
         };
         
-        return await _client.GetAsync<Actor>(endpoint, parameters, cancellationToken);
+        return await _client.GetAsync<Actor>(endpoint, parameters, cancellationToken).ConfigureAwait(false);
     }
     
     /// <summary>
@@ -123,7 +195,9 @@ public class UserService
             "self",
             profileRecord,
             true,
-            cancellationToken);
+            cancellationToken)
+            .ConfigureAwait(false);
+        
         return profileRecord;
     }
     
@@ -157,7 +231,7 @@ public class UserService
             parameters["cursor"] = cursor;
         }
         
-        return await _client.GetAsync<ActorsResponse>(endpoint, parameters, cancellationToken);
+        return await _client.GetAsync<ActorsResponse>(endpoint, parameters, cancellationToken).ConfigureAwait(false);
     }
     
     /// <summary>
@@ -190,7 +264,7 @@ public class UserService
             parameters["cursor"] = cursor;
         }
         
-        return await _client.GetAsync<ActorsResponse>(endpoint, parameters, cancellationToken);
+        return await _client.GetAsync<ActorsResponse>(endpoint, parameters, cancellationToken).ConfigureAwait(false);
     }
     
     /// <summary>
@@ -223,7 +297,7 @@ public class UserService
             parameters["cursor"] = cursor;
         }
         
-        return await _client.GetAsync<ActorsResponse>(endpoint, parameters, cancellationToken);
+        return await _client.GetAsync<ActorsResponse>(endpoint, parameters, cancellationToken).ConfigureAwait(false);
     }
     
     /// <summary>
@@ -249,7 +323,8 @@ public class UserService
             followRecord,
             null,
             true,
-            cancellationToken);
+            cancellationToken)
+            .ConfigureAwait(false);
     }
     
     /// <summary>
@@ -287,13 +362,14 @@ public class UserService
             session.Did,
             "app.bsky.graph.follow",
             rkey,
-            cancellationToken);
+            cancellationToken)
+            .ConfigureAwait(false);
     }
     
     private async Task<SessionInfo> GetSessionAsync(CancellationToken cancellationToken)
     {
         const string endpoint = "com.atproto.server.getSession";
-        return await _client.GetAsync<SessionInfo>(endpoint, null, cancellationToken);
+        return await _client.GetAsync<SessionInfo>(endpoint, null, cancellationToken).ConfigureAwait(false);
     }
     
     private async Task<string> ResolveDid(string handleOrDid, CancellationToken cancellationToken)
@@ -303,7 +379,7 @@ public class UserService
             return handleOrDid;
         }
         
-        return await _identityService.ResolveHandleAsync(handleOrDid, cancellationToken);
+        return await _identityService.ResolveHandleAsync(handleOrDid, cancellationToken).ConfigureAwait(false);
     }
 }
 

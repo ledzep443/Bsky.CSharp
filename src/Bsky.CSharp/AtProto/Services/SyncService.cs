@@ -51,9 +51,9 @@ public class SyncService
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _client.GetAccessToken());
         }
         
-        var response = await _client.SendRawRequestAsync(request, cancellationToken);
+        var response = await _client.SendRawRequestAsync(request, cancellationToken).ConfigureAwait(false);
         
-        return await response.Content.ReadAsByteArrayAsync(cancellationToken);
+        return await response.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
     }
     
     /// <summary>
@@ -74,7 +74,8 @@ public class SyncService
         await _client.PostAsync<object>(
             RequestCrawlEndpoint, 
             request, 
-            cancellationToken);
+            cancellationToken)
+            .ConfigureAwait(false);
     }
     
     /// <summary>
@@ -98,6 +99,7 @@ public class SyncService
         await _client.PostAsync<object>(
             NotifyOfUpdateEndpoint, 
             request, 
-            cancellationToken);
+            cancellationToken)
+            .ConfigureAwait(false);
     }
 }
