@@ -3,12 +3,12 @@ using System.Text.Json.Serialization;
 namespace Bsky.CSharp.Bluesky.Models;
 
 /// <summary>
-/// Represents an image used in a post.
+/// Represents an image in a post.
 /// </summary>
-public record Image
+public class Image
 {
     /// <summary>
-    /// The URL of the image blob.
+    /// The URL of the image.
     /// </summary>
     [JsonPropertyName("image")]
     public required string ImageUrl { get; init; }
@@ -20,26 +20,8 @@ public record Image
     public required string Alt { get; init; }
     
     /// <summary>
-    /// The aspect ratio of the image.
+    /// Optional aspect ratio of the image as width/height.
     /// </summary>
     [JsonPropertyName("aspectRatio")]
     public AspectRatio? AspectRatio { get; init; }
-}
-
-/// <summary>
-/// Represents the aspect ratio of an image.
-/// </summary>
-public record AspectRatio
-{
-    /// <summary>
-    /// The width component of the aspect ratio.
-    /// </summary>
-    [JsonPropertyName("width")]
-    public required int Width { get; init; }
-    
-    /// <summary>
-    /// The height component of the aspect ratio.
-    /// </summary>
-    [JsonPropertyName("height")]
-    public required int Height { get; init; }
 }

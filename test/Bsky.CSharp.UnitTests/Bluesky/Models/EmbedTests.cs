@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Bsky.CSharp.AtProto.Models;
 using Bsky.CSharp.Bluesky.Models;
 
 namespace Bsky.CSharp.UnitTests.Bluesky.Models;
@@ -60,8 +61,6 @@ public class EmbedTests
                 {
                     Uri = "https://example.com/thumb.jpg",
                     MimeType = "image/jpeg",
-                    Width = 300,
-                    Height = 200
                 }
             }
         };
@@ -81,9 +80,7 @@ public class EmbedTests
         Assert.Contains("\"description\": \"This is an example website\"", json);
         Assert.Contains("\"thumb\"", json);
         Assert.Contains("\"uri\": \"https://example.com/thumb.jpg\"", json);
-        Assert.Contains("\"mimetype\": \"image/jpeg\"", json);
-        Assert.Contains("\"width\": 300", json);
-        Assert.Contains("\"height\": 200", json);
+        Assert.Contains("\"mimeType\": \"image/jpeg\"", json);
     }
     
     [Fact]
@@ -93,7 +90,7 @@ public class EmbedTests
         var embed = new EmbedRecord
         {
             Type = "app.bsky.embed.record",
-            Record = new ReplyRef
+            Record = new RecordRef
             {
                 Uri = "at://did:plc:user/app.bsky.feed.post/1234",
                 Cid = "bafyreia..."

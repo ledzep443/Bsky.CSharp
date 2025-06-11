@@ -1,63 +1,70 @@
+using System;
 using System.Text.Json.Serialization;
 
 namespace Bsky.CSharp.Bluesky.Models;
 
 /// <summary>
-/// Represents a post in the Bluesky network.
+/// Represents a post on Bluesky.
 /// </summary>
-public record Post
+public class Post
 {
     /// <summary>
-    /// The URI of the post.
+    /// URI of the post.
     /// </summary>
     [JsonPropertyName("uri")]
     public required string Uri { get; init; }
     
     /// <summary>
-    /// The Content Identifier (CID) of the post.
+    /// CID of the post.
     /// </summary>
     [JsonPropertyName("cid")]
     public required string Cid { get; init; }
     
     /// <summary>
-    /// The author of the post.
+    /// Author of the post.
     /// </summary>
     [JsonPropertyName("author")]
-    public required Actor Author { get; init; }
+    public required Author Author { get; init; }
     
     /// <summary>
-    /// The actual record content of the post.
+    /// Record data of the post.
     /// </summary>
     [JsonPropertyName("record")]
     public required PostRecord Record { get; init; }
     
     /// <summary>
-    /// The timestamp when the post was published.
+    /// Embedded content in the post.
+    /// </summary>
+    [JsonPropertyName("embed")]
+    public Embed? Embed { get; init; }
+    
+    /// <summary>
+    /// When the post was indexed.
     /// </summary>
     [JsonPropertyName("indexedAt")]
     public required DateTime IndexedAt { get; init; }
     
     /// <summary>
-    /// The parent post reference if this is a reply.
+    /// Likes count of the post.
     /// </summary>
-    [JsonPropertyName("replyParent")]
-    public ReplyRef? ReplyParent { get; init; }
+    [JsonPropertyName("likeCount")]
+    public int LikeCount { get; init; }
     
     /// <summary>
-    /// The root post reference if this is part of a thread.
+    /// Reposts count of the post.
     /// </summary>
-    [JsonPropertyName("replyRoot")]
-    public ReplyRef? ReplyRoot { get; init; }
+    [JsonPropertyName("repostCount")]
+    public int RepostCount { get; init; }
     
     /// <summary>
-    /// Viewer-specific state (if the viewer is authenticated).
+    /// Replies count of the post.
+    /// </summary>
+    [JsonPropertyName("replyCount")]
+    public int ReplyCount { get; init; }
+    
+    /// <summary>
+    /// Whether the current user has liked the post.
     /// </summary>
     [JsonPropertyName("viewer")]
     public PostViewer? Viewer { get; init; }
-    
-    /// <summary>
-    /// Reference to embedded content like images, links, or quoted posts.
-    /// </summary>
-    [JsonPropertyName("embed")]
-    public EmbedView? Embed { get; init; }
 }

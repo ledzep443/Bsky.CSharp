@@ -184,19 +184,10 @@ public class PostService : IPostService
         {
             Uri = url,
             Title = title,
-            Description = description
+            Description = description,
+            Thumb = await CreateThumbnailEmbedAsync(thumbnailData, thumbnailContentType, cancellationToken)
         };
         
-        // Upload thumbnail if provided
-        if (thumbnailData != null && !string.IsNullOrEmpty(thumbnailContentType))
-        {
-            var blob = await UploadImageAsync(thumbnailData, thumbnailContentType, cancellationToken);
-            externalInfo.Thumb = new EmbedExternalThumb
-            {
-                Uri = blob.Blob.Ref!.Link,
-                MimeType = thumbnailContentType
-            };
-        }
         
         // Create embed for external link
         var embed = new EmbedExternal
@@ -216,6 +207,20 @@ public class PostService : IPostService
             true,
             cancellationToken)
             .ConfigureAwait(false);
+    }
+    
+    private async Task<EmbedExternalThumb?> CreateThumbnailEmbedAsync(
+        byte[]? thumbnailData,
+        string? contentType,
+        CancellationToken cancellationToken)
+    {
+        if (thumbnailData == null || string.IsNullOrEmpty(contentType)) return null;
+        BlobRef blob = await UploadImageAsync(thumbnailData, contentType, cancellationToken);
+        return new EmbedExternalThumb
+        {
+            Uri = blob.Blob.Ref!.Link,
+            MimeType = contentType
+        };
     }
     
     /// <inheritdoc />
@@ -293,55 +298,4 @@ public class PostService : IPostService
         var session = await _client.GetAsync<SessionInfo>(endpoint, null, cancellationToken).ConfigureAwait(false);
         return session.Did;
     }
-}
-
-/// <summary>
-/// Information about an image to upload.
-/// </summary>
-public class ImageUpload
-{
-    /// <summary>
-    /// The binary data of the image.
-    /// </summary>
-    public required byte[] Data { get; init; }
-    
-    /// <summary>
-    /// The MIME type of the image.
-    /// </summary>
-    public required string ContentType { get; init; }
-    
-    /// <summary>
-    /// Alternative text for the image.
-    /// </summary>
-    public string? AltText { get; init; }
-    
-    /// <summary>
-    /// The aspect ratio of the image.
-    /// </summary>
-    public AspectRatio? AspectRatio { get; init; }
-}
-
-/// <summary>
-/// Response from the getPostThread endpoint.
-/// </summary>
-public class ThreadResponse
-{
-    /// <summary>
-    /// The thread containing the post.
-    /// </summary>
-    [JsonPropertyName("thread")]
-    public required ThreadView Thread { get; init; }
-}
-
-/// <summary>
-/// Base class for thread views.
-/// </summary>
-[JsonConverter(typeof(ThreadViewConverter))]
-public abstract class ThreadView
-{
-    /// <summary>
-    /// The type of thread view.
-    /// </summary>
-    [JsonPropertyName("$type")]
-    public required string Type { get; init; }
 }
