@@ -1,0 +1,14 @@
+﻿<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="Bsky.CSharp.sln.DotSettings.user" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src\Bsky.CSharp.Extensions\Bsky.CSharp.Extensions.csproj" Type="Classic C#" />
+    <Project Path="src\Bsky.CSharp\Bsky.CSharp.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test\Bsky.CSharp.UnitTests\Bsky.CSharp.UnitTests.csproj" Type="Classic C#" />
+  </Folder>
+</Solution>
