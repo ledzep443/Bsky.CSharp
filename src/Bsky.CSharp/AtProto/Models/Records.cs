@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Bsky.CSharp.AtProto.Models;
@@ -5,41 +6,45 @@ namespace Bsky.CSharp.AtProto.Models;
 /// <summary>
 /// Collection of records from a repository.
 /// </summary>
-public record Records
+public class Records
 {
     /// <summary>
     /// The list of records.
     /// </summary>
     [JsonPropertyName("records")]
-    public required List<RecordWithKey> RecordList { get; init; }
+    [Required]
+    public List<RecordWithKey>? RecordList { get; set; }
     
     /// <summary>
     /// Cursor for pagination.
     /// </summary>
     [JsonPropertyName("cursor")]
-    public string? Cursor { get; init; }
+    public string? Cursor { get; set; }
 }
 
 /// <summary>
 /// Record with its key and metadata.
 /// </summary>
-public record RecordWithKey
+public class RecordWithKey
 {
     /// <summary>
     /// The record URI.
     /// </summary>
     [JsonPropertyName("uri")]
-    public required string Uri { get; init; }
+    [Required]
+    public string? Uri { get; set; }
     
     /// <summary>
     /// The record CID.
     /// </summary>
     [JsonPropertyName("cid")]
-    public required string Cid { get; init; }
+    [Required]
+    public string? Cid { get; set; }
     
     /// <summary>
     /// The record value.
     /// </summary>
     [JsonPropertyName("value")]
-    public required Dictionary<string, object> Value { get; init; }
+    [Required]
+    public Dictionary<string, object>? Value { get; set; }
 }

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Bsky.CSharp.Bluesky.Models.Converters;
 
@@ -12,6 +13,6 @@ public abstract class ThreadView
     /// <summary>
     /// The type of thread view.
     /// </summary>
-    [JsonPropertyName("$type")]
-    public required string Type { get; init; }
+    [JsonPropertyName("$type"), Required, JsonRequired]
+    public string Type { get; set; }
 }

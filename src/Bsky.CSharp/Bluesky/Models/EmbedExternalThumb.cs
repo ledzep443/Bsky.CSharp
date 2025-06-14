@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Bsky.CSharp.Bluesky.Models;
@@ -10,12 +11,12 @@ public class EmbedExternalThumb
     /// <summary>
     /// The URI of the thumbnail image.
     /// </summary>
-    [JsonPropertyName("uri")]
-    public required string Uri { get; init; }
+    [JsonPropertyName("uri"), Required, JsonRequired]
+    public string Uri { get; set; }
     
     /// <summary>
     /// The MIME type of the thumbnail image.
     /// </summary>
-    [JsonPropertyName("mimeType")]
-    public required string MimeType { get; init; }
+    [JsonPropertyName("mimeType"), Required, JsonRequired]
+    public string MimeType { get; set; }
 }

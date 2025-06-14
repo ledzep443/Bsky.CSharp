@@ -11,11 +11,11 @@ public class PostViewer
     /// Whether the viewer has liked the post.
     /// </summary>
     [JsonPropertyName("like")]
-    public string? Like { get; init; }
+    public string? Like { get; set; }
     
     /// <summary>
     /// Whether the viewer has reposted the post.
     /// </summary>
     [JsonPropertyName("repost")]
-    public string? Repost { get; init; }
+    public string? Repost { get; set; }
 }

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Bsky.CSharp.Bluesky.Models;
 using Bsky.CSharp.Http;
@@ -427,14 +428,14 @@ public class ActorsResponse
     /// <summary>
     /// The list of actors.
     /// </summary>
-    [JsonPropertyName("actors")]
-    public required List<Actor> Actors { get; init; }
+    [JsonPropertyName("actors"), Required, JsonRequired]
+    public List<Actor> Actors { get; set; }
     
     /// <summary>
     /// Pagination cursor for the next page of results.
     /// </summary>
     [JsonPropertyName("cursor")]
-    public string? Cursor { get; init; }
+    public string? Cursor { get; set; }
 }
 
 /// <summary>
@@ -445,14 +446,14 @@ public class FollowRecord
     /// <summary>
     /// The DID of the user being followed.
     /// </summary>
-    [JsonPropertyName("subject")]
-    public required string Subject { get; init; }
+    [JsonPropertyName("subject"), Required, JsonRequired]
+    public string Subject { get; set; }
     
     /// <summary>
     /// When the follow relationship was created.
     /// </summary>
-    [JsonPropertyName("createdAt")]
-    public required DateTime CreatedAt { get; init; }
+    [JsonPropertyName("createdAt"), Required, JsonRequired]
+    public DateTime CreatedAt { get; set; }
 }
 
 /// <summary>
@@ -463,14 +464,14 @@ public class BlobReference
     /// <summary>
     /// The Content Identifier (CID) of the blob.
     /// </summary>
-    [JsonPropertyName("$link")]
-    public required string Cid { get; init; }
+    [JsonPropertyName("$link"), Required, JsonRequired]
+    public string Cid { get; set; }
     
     /// <summary>
     /// The MIME type of the blob.
     /// </summary>
-    [JsonPropertyName("mimeType")]
-    public required string MimeType { get; init; }
+    [JsonPropertyName("mimeType"), Required, JsonRequired]
+    public string MimeType { get; set; }
 }
 
 /// <summary>

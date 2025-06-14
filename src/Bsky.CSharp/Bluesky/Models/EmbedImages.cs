@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Bsky.CSharp.Bluesky.Models;
@@ -13,5 +14,7 @@ public class EmbedImages : Embed
     /// The list of embedded images.
     /// </summary>
     [JsonPropertyName("images")]
-    public required List<Image> Images { get; init; }
+    [Required]
+    [JsonRequired]
+    public List<Image> Images { get; set; }
 }

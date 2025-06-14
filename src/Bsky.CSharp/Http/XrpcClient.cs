@@ -120,7 +120,7 @@ public class XrpcClient : IXrpcClient
         var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
         
-        var content = await response.Content.ReadAsStreamAsync(cancellationToken);
+        var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
         var result = await JsonSerializer.DeserializeAsync<TResponse>(content, _jsonSerializerOptions, cancellationToken);
         
         if (result == null)
@@ -165,7 +165,7 @@ public class XrpcClient : IXrpcClient
         var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
         
-        var content = await response.Content.ReadAsStreamAsync(cancellationToken);
+        var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
         var result = await JsonSerializer.DeserializeAsync<TResponse>(content, _jsonSerializerOptions, cancellationToken);
         
         if (result == null)
@@ -235,7 +235,7 @@ public class XrpcClient : IXrpcClient
         var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
         
-        var content = await response.Content.ReadAsStreamAsync(cancellationToken);
+        var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
         var result = await JsonSerializer.DeserializeAsync<TResponse>(content, _jsonSerializerOptions, cancellationToken);
         
         if (result == null)

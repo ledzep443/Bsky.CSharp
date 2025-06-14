@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Bsky.CSharp.AtProto.Models;
@@ -5,23 +6,25 @@ namespace Bsky.CSharp.AtProto.Models;
 /// <summary>
 /// Represents an application password for API authentication.
 /// </summary>
-public record AppPassword
+public class AppPassword
 {
     /// <summary>
     /// The name of the application password.
     /// </summary>
     [JsonPropertyName("name")]
-    public required string Name { get; init; }
+    [Required]
+    public string? Name { get; set; }
     
     /// <summary>
     /// The generated password value.
     /// </summary>
     [JsonPropertyName("password")]
-    public string? Password { get; init; }
+    public string? Password { get; set; }
     
     /// <summary>
     /// The creation date of the application password.
     /// </summary>
     [JsonPropertyName("createdAt")]
-    public required DateTime CreatedAt { get; init; }
+    [Required]
+    public DateTime? CreatedAt { get; set; }
 }

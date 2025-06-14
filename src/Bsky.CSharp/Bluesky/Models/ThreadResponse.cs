@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Bsky.CSharp.Bluesky.Models;
@@ -10,6 +11,6 @@ public class ThreadResponse
     /// <summary>
     /// The thread containing the post.
     /// </summary>
-    [JsonPropertyName("thread")]
-    public required ThreadView Thread { get; init; }
+    [JsonPropertyName("thread"), Required, JsonRequired]
+    public ThreadView Thread { get; set; }
 }

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Bsky.CSharp.AtProto.Models;
@@ -5,23 +6,26 @@ namespace Bsky.CSharp.AtProto.Models;
 /// <summary>
 /// Represents a record in the AT Protocol.
 /// </summary>
-public record Record
+public class Record
 {
     /// <summary>
     /// The URI of the record.
     /// </summary>
     [JsonPropertyName("uri")]
-    public required string Uri { get; init; }
+    [Required]
+    public string? Uri { get; set; }
     
     /// <summary>
     /// The Content Identifier (CID) of the record.
     /// </summary>
     [JsonPropertyName("cid")]
-    public required string Cid { get; init; }
+    [Required]
+    public string? Cid { get; set; }
     
     /// <summary>
     /// The data content of the record.
     /// </summary>
     [JsonPropertyName("value")]
-    public required Dictionary<string, object> Value { get; init; }
+    [Required]
+    public Dictionary<string, object>? Value { get; set; }
 }

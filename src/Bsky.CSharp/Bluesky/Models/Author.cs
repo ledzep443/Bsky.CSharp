@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Bsky.CSharp.Bluesky.Models;
@@ -11,29 +12,33 @@ public class Author
     /// The DID of the author.
     /// </summary>
     [JsonPropertyName("did")]
-    public required string Did { get; init; }
+    [Required]
+    [JsonRequired]
+    public string Did { get; set; }
     
     /// <summary>
     /// The handle of the author.
     /// </summary>
     [JsonPropertyName("handle")]
-    public required string Handle { get; init; }
+    [Required]
+    [JsonRequired]
+    public string Handle { get; set; }
     
     /// <summary>
     /// The display name of the author.
     /// </summary>
     [JsonPropertyName("displayName")]
-    public string? DisplayName { get; init; }
+    public string? DisplayName { get; set; }
     
     /// <summary>
     /// The avatar image URL of the author.
     /// </summary>
     [JsonPropertyName("avatar")]
-    public string? Avatar { get; init; }
+    public string? Avatar { get; set; }
     
     /// <summary>
     /// Information about the author's relationship to the viewer.
     /// </summary>
     [JsonPropertyName("viewer")]
-    public AuthorViewer? Viewer { get; init; }
+    public AuthorViewer? Viewer { get; set; }
 }

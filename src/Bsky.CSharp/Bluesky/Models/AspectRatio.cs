@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Bsky.CSharp.Bluesky.Models;
@@ -11,11 +12,15 @@ public class AspectRatio
     /// The width component of the aspect ratio.
     /// </summary>
     [JsonPropertyName("width")]
-    public required float Width { get; init; }
+    [Required]
+    [JsonRequired]
+    public float Width { get; set; }
     
     /// <summary>
     /// The height component of the aspect ratio.
     /// </summary>
     [JsonPropertyName("height")]
-    public required float Height { get; init; }
+    [Required]
+    [JsonRequired]
+    public float Height { get; set; }
 }

@@ -1,45 +1,58 @@
 using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace Bsky.CSharp.AtProto.Models;
 
 /// <summary>
 /// Represents service authentication token information.
 /// </summary>
-public record ServiceAuthToken
+public class ServiceAuthToken
 {
     /// <summary>
     /// The authentication token value.
     /// </summary>
     [JsonPropertyName("accessToken")]
-    public required string AccessToken { get; init; }
+    [Required]
+    public string? AccessToken { get; set; }
     
     /// <summary>
     /// The refresh token value.
     /// </summary>
     [JsonPropertyName("refreshToken")]
-    public required string RefreshToken { get; init; }
+    [Required]
+    public string? RefreshToken { get; set; }
     
     /// <summary>
     /// The type of token.
     /// </summary>
     [JsonPropertyName("tokenType")]
-    public required string TokenType { get; init; }
+    [Required]
+    public string? TokenType { get; set; }
     
     /// <summary>
     /// When the token expires (in seconds).
     /// </summary>
     [JsonPropertyName("expiresIn")]
-    public required int ExpiresIn { get; init; }
+    [Required]
+    public int? ExpiresIn { get; set; }
     
     /// <summary>
     /// The handle of the authenticated user.
     /// </summary>
     [JsonPropertyName("handle")]
-    public required string Handle { get; init; }
+    [Required]
+    public string? Handle { get; set; }
     
     /// <summary>
     /// The DID of the authenticated user.
     /// </summary>
     [JsonPropertyName("did")]
-    public required string Did { get; init; }
+    [Required]
+    public string? Did { get; set; }
+    
+    /// <summary>
+    /// The expiration date and time of the token.
+    /// </summary>
+    [JsonPropertyName("expiresAt")]
+    public DateTime? ExpiresAt { get; set; }
 }

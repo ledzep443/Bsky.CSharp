@@ -47,7 +47,7 @@ public class BlobService : IBlobService
         }
         
         var response = await _client.SendRawRequestAsync(request, cancellationToken).ConfigureAwait(false);
-        var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
         
         var options = new System.Text.Json.JsonSerializerOptions
         {

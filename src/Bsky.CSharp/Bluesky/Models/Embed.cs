@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Bsky.CSharp.Bluesky.Models;
@@ -11,6 +12,6 @@ public abstract class Embed
     /// The type of embedded content.
     /// Following the pattern "app.bsky.embed.*" as specified in the Bluesky API.
     /// </summary>
-    [JsonPropertyName("$type")]
-    public required string Type { get; init; }
+    [JsonPropertyName("$type"), Required, JsonRequired]
+    public string? Type { get; set; }
 }

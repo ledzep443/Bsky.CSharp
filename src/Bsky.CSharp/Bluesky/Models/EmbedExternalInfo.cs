@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Bsky.CSharp.Bluesky.Models;
@@ -10,25 +11,25 @@ public class EmbedExternalInfo
     /// <summary>
     /// The URI of the external content.
     /// </summary>
-    [JsonPropertyName("uri")]
-    public required string Uri { get; init; }
+    [JsonPropertyName("uri"), Required, JsonRequired]
+    public string Uri { get; set; }
     
     /// <summary>
     /// The title of the external content.
     /// </summary>
     [JsonPropertyName("title")]
-    public string? Title { get; init; }
+    public string? Title { get; set; }
     
     /// <summary>
     /// The description of the external content.
     /// </summary>
     [JsonPropertyName("description")]
-    public string? Description { get; init; }
+    public string? Description { get; set; }
     
     /// <summary>
     /// Thumbnail image information for the external content.
     /// </summary>
     [JsonPropertyName("thumb")]
-    public EmbedExternalThumb? Thumb { get; init; }
+    public EmbedExternalThumb? Thumb { get; set; }
     
 }

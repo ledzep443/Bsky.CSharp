@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -7,153 +8,177 @@ namespace Bsky.CSharp.Bluesky.Models;
 /// Base class for view versions of embedded content in posts.
 /// </summary>
 [JsonConverter(typeof(EmbedViewConverter))]
-public abstract record EmbedView
+public abstract class EmbedView
 {
     /// <summary>
     /// The type of embedded content view.
     /// </summary>
     [JsonPropertyName("$type")]
-    public required string Type { get; init; }
+    [Required]
+    [JsonRequired]
+    public string? Type { get; set; }
 }
 
 /// <summary>
 /// Represents a view of embedded images in a post.
 /// </summary>
-public record EmbedViewImages : EmbedView
+public class EmbedViewImages : EmbedView
 {
     /// <summary>
     /// The list of images embedded in the post.
     /// </summary>
     [JsonPropertyName("images")]
-    public required List<ImageView> Images { get; init; }
+    [Required]
+    [JsonRequired]
+    public List<ImageView>? Images { get; set; }
 }
 
 /// <summary>
-/// Represents a view of an embedded external link in a post.
+/// Represents a view of an external link embedded in a post.
 /// </summary>
-public record EmbedViewExternal : EmbedView
+public class EmbedViewExternal : EmbedView
 {
     /// <summary>
-    /// External link information.
+    /// Information about the external content.
     /// </summary>
     [JsonPropertyName("external")]
-    public required EmbedViewExternalInfo External { get; init; }
+    [Required]
+    [JsonRequired]
+    public EmbedViewExternalInfo? External { get; set; }
 }
 
 /// <summary>
 /// Represents a view of an embedded record (e.g., quoted post) in a post.
 /// </summary>
-public record EmbedViewRecord : EmbedView
+public class EmbedViewRecord : EmbedView
 {
     /// <summary>
     /// Reference to the embedded record view.
     /// </summary>
     [JsonPropertyName("record")]
-    public required EmbedViewRecordView Record { get; init; }
+    [Required]
+    [JsonRequired]
+    public EmbedViewRecordView? Record { get; set; }
 }
 
 /// <summary>
 /// Represents a view of both a record and media embedded in a post.
 /// </summary>
-public record EmbedViewRecordWithMedia : EmbedView
+public class EmbedViewRecordWithMedia : EmbedView
 {
     /// <summary>
     /// Reference to the embedded record.
     /// </summary>
     [JsonPropertyName("record")]
-    public required EmbedViewRecordView Record { get; init; }
+    [Required]
+    [JsonRequired]
+    public EmbedViewRecordView? Record { get; set; }
     
     /// <summary>
     /// The media associated with the embedded record.
     /// </summary>
     [JsonPropertyName("media")]
-    public required EmbedViewMedia Media { get; init; }
+    [Required]
+    [JsonRequired]
+    public EmbedViewMedia? Media { get; set; }
 }
 
 /// <summary>
 /// Base class for embedded record views.
 /// </summary>
 [JsonConverter(typeof(EmbedViewRecordViewConverter))]
-public abstract record EmbedViewRecordView
+public abstract class EmbedViewRecordView
 {
     /// <summary>
     /// The type of embedded record view.
     /// </summary>
     [JsonPropertyName("$type")]
-    public required string Type { get; init; }
+    [Required]
+    [JsonRequired]
+    public string? Type { get; set; }
 }
 
 /// <summary>
 /// Represents an image view with display metadata.
 /// </summary>
-public record ImageView
+public class ImageView
 {
     /// <summary>
     /// The blob URL of the image.
     /// </summary>
     [JsonPropertyName("fullsize")]
-    public required string Fullsize { get; init; }
+    [Required]
+    [JsonRequired]
+    public string? Fullsize { get; set; }
     
     /// <summary>
     /// The URL of the thumbnail image.
     /// </summary>
     [JsonPropertyName("thumb")]
-    public required string Thumb { get; init; }
+    [Required]
+    [JsonRequired]
+    public string? Thumb { get; set; }
     
     /// <summary>
     /// Alternative text for the image.
     /// </summary>
     [JsonPropertyName("alt")]
-    public required string Alt { get; init; }
+    [Required]
+    [JsonRequired]
+    public string? Alt { get; set; }
     
     /// <summary>
     /// The aspect ratio of the image.
     /// </summary>
     [JsonPropertyName("aspectRatio")]
-    public AspectRatio? AspectRatio { get; init; }
+    public AspectRatio? AspectRatio { get; set; }
 }
 
 /// <summary>
 /// Represents external link information in a view context.
 /// </summary>
-public record EmbedViewExternalInfo
+public class EmbedViewExternalInfo
 {
     /// <summary>
     /// The external URL.
     /// </summary>
     [JsonPropertyName("uri")]
-    public required string Uri { get; init; }
+    [Required]
+    [JsonRequired]
+    public string? Uri { get; set; }
     
     /// <summary>
     /// Title of the external content.
     /// </summary>
     [JsonPropertyName("title")]
-    public string? Title { get; init; }
+    public string? Title { get; set; }
     
     /// <summary>
     /// Description of the external content.
     /// </summary>
     [JsonPropertyName("description")]
-    public string? Description { get; init; }
+    public string? Description { get; set; }
     
     /// <summary>
     /// The URL of the thumbnail image.
     /// </summary>
     [JsonPropertyName("thumb")]
-    public string? Thumb { get; init; }
+    public string? Thumb { get; set; }
 }
 
 /// <summary>
 /// Base class for embedded media view types (either images or external).
 /// </summary>
 [JsonConverter(typeof(EmbedViewMediaConverter))]
-public abstract record EmbedViewMedia
+public abstract class EmbedViewMedia
 {
     /// <summary>
     /// The type of media view.
     /// </summary>
     [JsonPropertyName("$type")]
-    public required string Type { get; init; }
+    [Required]
+    [JsonRequired]
+    public string? Type { get; set; }
 }
 
 /// <summary>

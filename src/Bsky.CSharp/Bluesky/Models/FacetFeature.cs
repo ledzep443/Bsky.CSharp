@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -7,49 +8,49 @@ namespace Bsky.CSharp.Bluesky.Models;
 /// Base class for facet features (mention, link, tag).
 /// </summary>
 [JsonConverter(typeof(FacetFeatureConverter))]
-public abstract record FacetFeature
+public abstract class FacetFeature
 {
     /// <summary>
     /// The type of facet feature.
     /// </summary>
-    [JsonPropertyName("$type")]
-    public required string Type { get; init; }
+    [JsonPropertyName("$type"), Required, JsonRequired]
+    public string? Type { get; set; }
 }
 
 /// <summary>
 /// Represents a mention in a post facet.
 /// </summary>
-public record FacetMention : FacetFeature
+public class FacetMention : FacetFeature
 {
     /// <summary>
     /// The DID of the mentioned user.
     /// </summary>
-    [JsonPropertyName("did")]
-    public required string Did { get; init; }
+    [JsonPropertyName("did"), Required, JsonRequired]
+    public string? Did { get; set; }
 }
 
 /// <summary>
 /// Represents a link in a post facet.
 /// </summary>
-public record FacetLink : FacetFeature
+public class FacetLink : FacetFeature
 {
     /// <summary>
     /// The URL being linked.
     /// </summary>
-    [JsonPropertyName("uri")]
-    public required string Uri { get; init; }
+    [JsonPropertyName("uri"), Required, JsonRequired]
+    public string? Uri { get; set; }
 }
 
 /// <summary>
 /// Represents a tag in a post facet.
 /// </summary>
-public record FacetTag : FacetFeature
+public class FacetTag : FacetFeature
 {
     /// <summary>
     /// The tag name.
     /// </summary>
-    [JsonPropertyName("tag")]
-    public required string Tag { get; init; }
+    [JsonPropertyName("tag"), Required, JsonRequired]
+    public string? Tag { get; set; }
 }
 
 /// <summary>

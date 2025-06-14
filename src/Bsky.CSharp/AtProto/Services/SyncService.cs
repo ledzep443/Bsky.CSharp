@@ -53,7 +53,7 @@ public class SyncService
         
         var response = await _client.SendRawRequestAsync(request, cancellationToken).ConfigureAwait(false);
         
-        return await response.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
+        return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
     }
     
     /// <summary>

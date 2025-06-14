@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Bsky.CSharp.Bluesky.Models;
@@ -11,6 +12,6 @@ public class EmbedExternal : Embed
     /// <summary>
     /// Information about the external link.
     /// </summary>
-    [JsonPropertyName("external")]
-    public required EmbedExternalInfo External { get; init; }
+    [JsonPropertyName("external"), Required, JsonRequired]
+    public EmbedExternalInfo External { get; set; }
 }

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Bsky.CSharp.AtProto.Models;
@@ -11,11 +12,13 @@ public class SessionCreateRequest
     /// The identifier (handle or email) for authentication.
     /// </summary>
     [JsonPropertyName("identifier")]
-    public required string Identifier { get; init; }
+    [Required]
+    public string Identifier { get; set; }
     
     /// <summary>
     /// The password for authentication.
     /// </summary>
     [JsonPropertyName("password")]
-    public required string Password { get; init; }
+    [Required]
+    public string Password { get; set; }
 }

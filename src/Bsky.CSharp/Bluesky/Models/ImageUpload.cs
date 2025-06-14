@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Bsky.CSharp.Bluesky.Models;
 
@@ -11,20 +12,22 @@ public class ImageUpload
     /// <summary>
     /// The binary data of the image.
     /// </summary>
-    public required byte[] Data { get; init; }
+    [Required]
+    public byte[] Data { get; set; }
     
     /// <summary>
     /// The MIME type of the image.
     /// </summary>
-    public required string ContentType { get; init; }
+    [Required]
+    public string ContentType { get; set; }
     
     /// <summary>
     /// Alternative text for the image for accessibility.
     /// </summary>
-    public string? AltText { get; init; }
+    public string? AltText { get; set; }
     
     /// <summary>
     /// Optional aspect ratio of the image as width/height.
     /// </summary>
-    public AspectRatio? AspectRatio { get; init; }
+    public AspectRatio? AspectRatio { get; set; }
 }

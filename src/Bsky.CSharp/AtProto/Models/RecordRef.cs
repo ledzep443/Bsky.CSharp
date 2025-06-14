@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Bsky.CSharp.AtProto.Models;
@@ -5,17 +6,19 @@ namespace Bsky.CSharp.AtProto.Models;
 /// <summary>
 /// Reference to a created record.
 /// </summary>
-public record RecordRef
+public class RecordRef
 {
     /// <summary>
     /// The URI of the record.
     /// </summary>
     [JsonPropertyName("uri")]
-    public required string Uri { get; init; }
+    [Required]
+    public string? Uri { get; set; }
     
     /// <summary>
     /// The CID (Content Identifier) of the record.
     /// </summary>
     [JsonPropertyName("cid")]
-    public required string Cid { get; init; }
+    [Required]
+    public string? Cid { get; set; }
 }

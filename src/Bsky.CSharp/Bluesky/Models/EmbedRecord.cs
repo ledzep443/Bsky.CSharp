@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Bsky.CSharp.AtProto.Models;
 
@@ -13,5 +14,7 @@ public class EmbedRecord : Embed
     /// The embedded record reference.
     /// </summary>
     [JsonPropertyName("record")]
-    public required RecordRef Record { get; init; }
+    [Required]
+    [JsonRequired]
+    public RecordRef Record { get; set; }
 }

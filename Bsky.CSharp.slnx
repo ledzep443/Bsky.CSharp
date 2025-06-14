@@ -5,7 +5,7 @@
     <File Path="README.md" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src\Bsky.CSharp.Extensions\Bsky.CSharp.Extensions.csproj" Type="Classic C#" />
+    <Project Path="src\Bsky.AspNetCore.DependencyInjection\Bsky.AspNetCore.DependencyInjection.csproj" Type="Classic C#" />
     <Project Path="src\Bsky.CSharp\Bsky.CSharp.csproj" Type="Classic C#" />
   </Folder>
   <Folder Name="/test/">

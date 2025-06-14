@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Bsky.CSharp.Bluesky.Models;
@@ -10,6 +11,6 @@ public class NotFoundThreadView : ThreadView
     /// <summary>
     /// The URI of the post that was not found.
     /// </summary>
-    [JsonPropertyName("uri")]
-    public required string Uri { get; init; }
+    [JsonPropertyName("uri"), Required, JsonRequired]
+    public string Uri { get; set; }
 }

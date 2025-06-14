@@ -82,10 +82,10 @@ public class BskyHandleValidator
 
 public static partial class BskyHandleRegex
 {
-	[GeneratedRegex("^[a-zA-Z0-9.-]*$")]
-	public static partial Regex ValidHandle();
+	private static readonly Regex _validHandle = new Regex("\"^[a-zA-Z0-9.-]*$\"", RegexOptions.Compiled);
+	public static Regex ValidHandle() => _validHandle;
 
-	[GeneratedRegex("^[a-zA-Z]")]
-	public static partial Regex ValidHandlePart();
+	private static readonly Regex _validHandlePart = new Regex("^[a-zA-Z]", RegexOptions.Compiled);
+	public static Regex ValidHandlePart() => _validHandlePart;
 }
 

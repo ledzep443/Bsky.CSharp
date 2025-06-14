@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Bsky.CSharp.Bluesky.Models;
@@ -10,30 +11,30 @@ public class SessionInfo
     /// <summary>
     /// The DID of the authenticated user.
     /// </summary>
-    [JsonPropertyName("did")]
-    public required string Did { get; init; }
+    [JsonPropertyName("did"), Required, JsonRequired]
+    public string Did { get; set; }
     
     /// <summary>
     /// The handle of the authenticated user.
     /// </summary>
-    [JsonPropertyName("handle")]
-    public required string Handle { get; init; }
+    [JsonPropertyName("handle"), Required, JsonRequired]
+    public string Handle { get; set; }
     
     /// <summary>
     /// The email of the authenticated user, if available.
     /// </summary>
     [JsonPropertyName("email")]
-    public string? Email { get; init; }
+    public string? Email { get; set; }
     
     /// <summary>
     /// Indicates if the user's email is confirmed.
     /// </summary>
     [JsonPropertyName("emailConfirmed")]
-    public bool? EmailConfirmed { get; init; }
+    public bool? EmailConfirmed { get; set; }
     
     /// <summary>
     /// The DID of the user's PDS instance.
     /// </summary>
     [JsonPropertyName("didDoc")]
-    public object? DidDoc { get; init; }
+    public object? DidDoc { get; set; }
 }

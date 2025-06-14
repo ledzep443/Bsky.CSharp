@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Bsky.CSharp.AtProto.Models;
@@ -5,53 +6,58 @@ namespace Bsky.CSharp.AtProto.Models;
 /// <summary>
 /// Reference to an uploaded blob.
 /// </summary>
-public record BlobRef
+public class BlobRef
 {
     /// <summary>
     /// The blob reference.
     /// </summary>
     [JsonPropertyName("blob")]
-    public required BlobData Blob { get; init; }
+    [Required]
+    public BlobData? Blob { get; set; }
 }
 
 /// <summary>
 /// Blob data with type information.
 /// </summary>
-public record BlobData
+public class BlobData
 {
     /// <summary>
     /// The MIME type of the blob.
     /// </summary>
     [JsonPropertyName("mimeType")]
-    public required string MimeType { get; init; }
+    [Required]
+    public string? MimeType { get; set; }
     
     /// <summary>
     /// The size of the blob in bytes.
     /// </summary>
     [JsonPropertyName("size")]
-    public required int Size { get; init; }
+    [Required]
+    public int? Size { get; set; }
     
     /// <summary>
     /// The reference type.
     /// </summary>
     [JsonPropertyName("$type")]
-    public string? Type { get; init; }
+    [Required]
+    public string? Type { get; set; }
     
     /// <summary>
     /// The blob reference.
     /// </summary>
     [JsonPropertyName("ref")]
-    public RefData? Ref { get; init; }
+    public RefData? Ref { get; set; }
 }
 
 /// <summary>
 /// Reference data for a blob.
 /// </summary>
-public record RefData
+public class RefData
 {
     /// <summary>
     /// The link to the blob.
     /// </summary>
     [JsonPropertyName("$link")]
-    public required string Link { get; init; }
+    [Required]
+    public string? Link { get; set; }
 }
