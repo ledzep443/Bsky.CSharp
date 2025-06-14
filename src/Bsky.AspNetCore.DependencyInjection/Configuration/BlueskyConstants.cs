@@ -1,4 +1,4 @@
-namespace Bsky.CSharp.Configuration;
+namespace Bsky.AspNetCore.DependencyInjection.Configuration;
 
 public static class BlueskyConstants
 {
