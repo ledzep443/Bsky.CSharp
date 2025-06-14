@@ -16,7 +16,7 @@ Bsky.CSharp provides a robust and type-safe way to interact with Bluesky's APIs 
 
 ## Requirements
 
-- .NET 9.0 or higher
+- .NET Standard 2.1 or higher (compatible with .NET Core 3.0+, .NET 5+, .NET 6+, .NET 7+, .NET 8+)
 
 ## Installation
 
@@ -33,7 +33,7 @@ dotnet add package Bsky.CSharp
 ### Setting up Dependency Injection
 
 ```csharp
-using Bsky.CSharp.Extensions;
+using Bsky.AspNetCore.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
 // Set up the service collection
@@ -226,13 +226,13 @@ The `ImageUpload` class represents an image to be uploaded with a post:
 public class ImageUpload
 {
     // The binary data of the image
-    public required byte[] Data { get; init; }
+    public byte[]? Data { get; set; }
     
     // The MIME type of the image (e.g., "image/jpeg", "image/png")
-    public required string ContentType { get; init; }
+    public string? ContentType { get; set; }
     
     // Alternative text for the image for accessibility
-    public string? AltText { get; init; }
+    public string? AltText { get; set; }
 }
 ```
 
