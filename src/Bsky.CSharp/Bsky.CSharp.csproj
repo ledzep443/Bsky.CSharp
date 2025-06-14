@@ -9,6 +9,7 @@
         <Company>Streaming Solutions USA</Company>
         <Description>C# Bluesky SDK</Description>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/ledzep443/Bsky.CSharp</RepositoryUrl>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
@@ -19,6 +20,10 @@
       <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
       <PackageReference Include="System.Text.Json" Version="9.0.6" />
       <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
 </Project>
