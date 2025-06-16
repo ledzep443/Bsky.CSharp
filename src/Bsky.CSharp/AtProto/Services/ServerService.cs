@@ -6,7 +6,7 @@ namespace Bsky.CSharp.AtProto.Services;
 /// <summary>
 /// Service for interacting with AT Protocol server endpoints.
 /// </summary>
-public class ServerService
+public class ServerService : IServerService
 {
     private readonly XrpcClient _client;
     private const string DescribeServerEndpoint = "com.atproto.server.describeServer";
@@ -32,5 +32,25 @@ public class ServerService
             null,
             cancellationToken)
             .ConfigureAwait(false);
+    }
+
+    public async Task<ServerInfo> GetServerInfoAsync(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<AppPassword> CreateAppPasswordAsync(string name, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<List<AppPassword>> ListAppPasswordsAsync(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task RevokeAppPasswordAsync(string name, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
     }
 }

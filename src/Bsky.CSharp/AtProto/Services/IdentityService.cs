@@ -6,7 +6,7 @@ namespace Bsky.CSharp.AtProto.Services;
 /// <summary>
 /// Service for working with AT Protocol identities.
 /// </summary>
-public class IdentityService
+public class IdentityService : IIdentityService
 {
     private readonly XrpcClient _client;
     private const string ResolveHandleEndpoint = "com.atproto.identity.resolveHandle";
@@ -42,5 +42,15 @@ public class IdentityService
             .ConfigureAwait(false);
         
         return response.DidValue;
+    }
+
+    public async Task UpdateHandleAsync(string handle, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    async Task<Did> IIdentityService.ResolveHandleAsync(string handle, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -7,81 +7,7 @@ using Bsky.CSharp.AtProto.Models;
 
 namespace Bsky.CSharp.Bluesky.Services;
 
-/// <summary>
-/// Interface for managing user accounts and profiles on Bluesky.
-/// </summary>
-public interface IUserService
-{
-    /// <summary>
-    /// Gets the current user's profile.
-    /// </summary>
-    /// <param name="cancellationToken">A token to cancel the request.</param>
-    /// <returns>The user's profile.</returns>
-    Task<Actor> GetMyProfileAsync(CancellationToken cancellationToken = default);
-    
-    /// <summary>
-    /// Gets a user's profile by handle or DID.
-    /// </summary>
-    /// <param name="handleOrDid">The handle or DID of the user.</param>
-    /// <param name="cancellationToken">A token to cancel the request.</param>
-    /// <returns>The user's profile.</returns>
-    Task<Actor> GetProfileAsync(string handleOrDid, CancellationToken cancellationToken = default);
-    
-    /// <summary>
-    /// Updates the current user's profile.
-    /// </summary>
-    /// <param name="update">The profile update information.</param>
-    /// <param name="cancellationToken">A token to cancel the request.</param>
-    /// <returns>A reference to the updated profile record.</returns>
-    Task<ProfileRecord> UpdateProfileAsync(ProfileUpdate update, CancellationToken cancellationToken = default);
-    
-    /// <summary>
-    /// Searches for users by handle or display name.
-    /// </summary>
-    /// <param name="query">The search query.</param>
-    /// <param name="limit">Maximum number of results to return.</param>
-    /// <param name="cursor">Pagination cursor from a previous request.</param>
-    /// <param name="cancellationToken">A token to cancel the request.</param>
-    /// <returns>A list of matching users.</returns>
-    Task<ActorsResponse> SearchUsersAsync(
-        string query,
-        int? limit = null,
-        string? cursor = null,
-        CancellationToken cancellationToken = default);
-    
-    /// <summary>
-    /// Gets a list of users that the specified user follows.
-    /// </summary>
-    /// <param name="user">The handle or DID of the user.</param>
-    /// <param name="limit">Maximum number of results to return.</param>
-    /// <param name="cursor">Pagination cursor from a previous request.</param>
-    /// <param name="cancellationToken">A token to cancel the request.</param>
-    /// <returns>A list of users that the specified user follows.</returns>
-    Task<ActorsResponse> GetFollowsAsync(
-        string user,
-        int? limit = null,
-        string? cursor = null,
-        CancellationToken cancellationToken = default);
-    
-    /// <summary>
-    /// Gets a list of users that follow the specified user.
-    /// </summary>
-    /// <param name="user">The handle or DID of the user.</param>
-    /// <param name="limit">Maximum number of results to return.</param>
-    /// <param name="cursor">Pagination cursor from a previous request.</param>
-    /// <param name="cancellationToken">A token to cancel the request.</param>
-    /// <returns>A list of users that follow the specified user.</returns>
-    Task<ActorsResponse> GetFollowersAsync(
-        string user,
-        int? limit = null,
-        string? cursor = null,
-        CancellationToken cancellationToken = default);
-}
-
-
-/// <summary>
-/// Service for managing user accounts and profiles on Bluesky.
-/// </summary>
+/// <inheritdoc />
 public class UserService : IUserService
 {
     private readonly XrpcClient _client;
@@ -90,13 +16,7 @@ public class UserService : IUserService
     private readonly IdentityService _identityService;
     private const string ProfileCollectionId = "app.bsky.actor.profile";
     
-    /// <summary>
-    /// Creates a new user service.
-    /// </summary>
-    /// <param name="client">The XRPC client to use for API requests.</param>
-    /// <param name="repoService">The repository service.</param>
-    /// <param name="blobService">The blob service.</param>
-    /// <param name="identityService">The identity service.</param>
+    
     public UserService(
         XrpcClient client, 
         RepositoryService repoService, 
@@ -109,23 +29,14 @@ public class UserService : IUserService
         _identityService = identityService;
     }
     
-    /// <summary>
-    /// Gets the current user's profile.
-    /// </summary>
-    /// <param name="cancellationToken">A token to cancel the request.</param>
-    /// <returns>The user's profile.</returns>
+    /// <inheritdoc />
     public async Task<Actor> GetMyProfileAsync(CancellationToken cancellationToken = default)
     {
-        var session = await GetSessionAsync(cancellationToken);
+        SessionInfo session = await GetSessionAsync(cancellationToken);
         return await GetProfileAsync(session.Did, cancellationToken);
     }
     
-    /// <summary>
-    /// Gets a user's profile by handle or DID.
-    /// </summary>
-    /// <param name="handleOrDid">The handle or DID of the user.</param>
-    /// <param name="cancellationToken">A token to cancel the request.</param>
-    /// <returns>The user's profile.</returns>
+    /// <inheritdoc />
     public async Task<Actor> GetProfileAsync(string handleOrDid, CancellationToken cancellationToken = default)
     {
         const string endpoint = "app.bsky.actor.getProfile";
@@ -137,15 +48,10 @@ public class UserService : IUserService
         return await _client.GetAsync<Actor>(endpoint, parameters, cancellationToken).ConfigureAwait(false);
     }
     
-    /// <summary>
-    /// Updates the current user's profile.
-    /// </summary>
-    /// <param name="update">The profile update information.</param>
-    /// <param name="cancellationToken">A token to cancel the request.</param>
-    /// <returns>A reference to the updated profile record.</returns>
+    /// <inheritdoc />
     public async Task<ProfileRecord> UpdateProfileAsync(ProfileUpdate update, CancellationToken cancellationToken = default)
     {
-        var session = await GetSessionAsync(cancellationToken);
+        SessionInfo session = await GetSessionAsync(cancellationToken);
         var profileRecord = new ProfileRecord();
         
         // Set the properties that are being updated
@@ -177,7 +83,7 @@ public class UserService : IUserService
         // Upload banner if provided
         if (update.BannerImage != null)
         {
-            var bannerBlob = await _blobService.UploadBlobAsync(
+            BlobRef bannerBlob = await _blobService.UploadBlobAsync(
                 update.BannerImage, 
                 update.BannerImageContentType ?? "image/jpeg", 
                 cancellationToken);
@@ -202,14 +108,7 @@ public class UserService : IUserService
         return profileRecord;
     }
     
-    /// <summary>
-    /// Searches for users by handle or display name.
-    /// </summary>
-    /// <param name="query">The search query.</param>
-    /// <param name="limit">Maximum number of results to return.</param>
-    /// <param name="cursor">Pagination cursor from a previous request.</param>
-    /// <param name="cancellationToken">A token to cancel the request.</param>
-    /// <returns>A list of matching users.</returns>
+    /// <inheritdoc />
     public async Task<ActorsResponse> SearchUsersAsync(
         string query,
         int? limit = null,
@@ -235,14 +134,7 @@ public class UserService : IUserService
         return await _client.GetAsync<ActorsResponse>(endpoint, parameters, cancellationToken).ConfigureAwait(false);
     }
     
-    /// <summary>
-    /// Gets a list of users that the specified user follows.
-    /// </summary>
-    /// <param name="user">The handle or DID of the user.</param>
-    /// <param name="limit">Maximum number of results to return.</param>
-    /// <param name="cursor">Pagination cursor from a previous request.</param>
-    /// <param name="cancellationToken">A token to cancel the request.</param>
-    /// <returns>A list of users that the specified user follows.</returns>
+    /// <inheritdoc />
     public async Task<ActorsResponse> GetFollowsAsync(
         string user,
         int? limit = null,
@@ -268,14 +160,7 @@ public class UserService : IUserService
         return await _client.GetAsync<ActorsResponse>(endpoint, parameters, cancellationToken).ConfigureAwait(false);
     }
     
-    /// <summary>
-    /// Gets a list of users that follow the specified user.
-    /// </summary>
-    /// <param name="user">The handle or DID of the user.</param>
-    /// <param name="limit">Maximum number of results to return.</param>
-    /// <param name="cursor">Pagination cursor from a previous request.</param>
-    /// <param name="cancellationToken">A token to cancel the request.</param>
-    /// <returns>A list of users that follow the specified user.</returns>
+    /// <inheritdoc />
     public async Task<ActorsResponse> GetFollowersAsync(
         string user,
         int? limit = null,
@@ -301,16 +186,11 @@ public class UserService : IUserService
         return await _client.GetAsync<ActorsResponse>(endpoint, parameters, cancellationToken).ConfigureAwait(false);
     }
     
-    /// <summary>
-    /// Follows a user.
-    /// </summary>
-    /// <param name="user">The handle or DID of the user to follow.</param>
-    /// <param name="cancellationToken">A token to cancel the request.</param>
-    /// <returns>A reference to the created follow record.</returns>
+    /// <inheritdoc />
     public async Task<RecordRef> FollowUserAsync(string user, CancellationToken cancellationToken = default)
     {
-        var session = await GetSessionAsync(cancellationToken);
-        var did = await ResolveDid(user, cancellationToken);
+        SessionInfo session = await GetSessionAsync(cancellationToken);
+        string did = await ResolveDid(user, cancellationToken);
         
         var followRecord = new FollowRecord
         {
@@ -328,19 +208,14 @@ public class UserService : IUserService
             .ConfigureAwait(false);
     }
     
-    /// <summary>
-    /// Unfollows a user.
-    /// </summary>
-    /// <param name="user">The handle or DID of the user to unfollow.</param>
-    /// <param name="cancellationToken">A token to cancel the request.</param>
-    /// <returns>A task representing the asynchronous operation.</returns>
+    /// <inheritdoc />
     public async Task UnfollowUserAsync(string user, CancellationToken cancellationToken = default)
     {
-        var session = await GetSessionAsync(cancellationToken);
+        SessionInfo session = await GetSessionAsync(cancellationToken);
         
         // Get the follow record URI
-        var follows = await GetFollowsAsync(session.Did, 100, null, cancellationToken);
-        var followRecord = follows.Actors.FirstOrDefault(a => 
+        ActorsResponse follows = await GetFollowsAsync(session.Did, 100, null, cancellationToken);
+        Actor? followRecord = follows.Actors.FirstOrDefault(a => 
             a.Did == user || 
             a.Handle.Equals(user, StringComparison.OrdinalIgnoreCase));
         
@@ -350,14 +225,14 @@ public class UserService : IUserService
         }
         
         // Extract the record key from the URI
-        var uri = followRecord.Viewer!.Following!;
-        var parts = uri.Split('/');
+        string uri = followRecord.Viewer!.Following!;
+        string[]? parts = uri.Split('/');
         if (parts.Length < 4)
         {
             throw new InvalidOperationException($"Invalid follow record URI format: {uri}");
         }
         
-        var rkey = parts[4];
+        string rkey = parts[4];
         
         await _repoService.DeleteRecordAsync(
             session.Did,

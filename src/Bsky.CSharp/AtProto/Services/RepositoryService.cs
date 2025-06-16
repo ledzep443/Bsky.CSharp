@@ -6,7 +6,7 @@ namespace Bsky.CSharp.AtProto.Services;
 /// <summary>
 /// Service for working with AT Protocol repositories.
 /// </summary>
-public class RepositoryService
+public class RepositoryService : IRepositoryService
 {
     private readonly XrpcClient _client;
     private const string CreateRecordEndpoint = "com.atproto.repo.createRecord";
@@ -57,7 +57,18 @@ public class RepositoryService
             cancellationToken)
             .ConfigureAwait(false);
     }
-    
+
+    public async Task<T> GetRecordAsync<T>(string repo, string collection, string rkey, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    async Task<RecordRef> IRepositoryService.PutRecordAsync(string repo, string collection, string rkey, object record, bool validate,
+        CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Gets a record from a repository.
     /// </summary>

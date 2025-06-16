@@ -6,7 +6,7 @@ namespace Bsky.CSharp.AtProto.Services;
 /// <summary>
 /// Service for handling AT Protocol authentication and sessions.
 /// </summary>
-public class AuthenticationService
+public class AuthenticationService : IAuthenticationService
 {
     private readonly XrpcClient _client;
     private const string CreateSessionEndpoint = "com.atproto.server.createSession";
@@ -48,7 +48,12 @@ public class AuthenticationService
         
         return response;
     }
-    
+
+    public async Task<ServiceAuthToken> RefreshSessionAsync(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Refreshes the current session using the refresh token.
     /// </summary>

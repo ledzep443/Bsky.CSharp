@@ -5,7 +5,7 @@ namespace Bsky.CSharp.AtProto.Services;
 /// <summary>
 /// Service for AT Protocol repository synchronization operations.
 /// </summary>
-public class SyncService
+public class SyncService : ISyncService
 {
     private readonly XrpcClient _client;
     private const string GetBlobEndpoint = "com.atproto.sync.getBlob";
@@ -101,5 +101,15 @@ public class SyncService
             request, 
             cancellationToken)
             .ConfigureAwait(false);
+    }
+
+    public async Task<string> GetRepoHeadAsync(string did, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<byte[]> GetCommitAsync(string did, string cid, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
     }
 }
