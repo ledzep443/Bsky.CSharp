@@ -16,7 +16,7 @@ Bsky.CSharp provides a robust and type-safe way to interact with Bluesky's APIs 
 
 ## Requirements
 
-- .NET Standard 2.1 or higher (compatible with .NET Core 3.0+, .NET 5+, .NET 6+, .NET 7+, .NET 8+)
+- .NET 8.0 or higher
 
 ## Installation
 C# applications can use the Bsky.CSharp library directly. For ASP.NET Core applications, consider using the [Bsky.AspNetCore.DependencyInjection](https://github.com/ledzep443/Bsky.CSharp/tree/main/src/Bsky.AspNetCore.DependencyInjection) package for easier integration.
