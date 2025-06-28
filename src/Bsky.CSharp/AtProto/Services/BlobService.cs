@@ -65,8 +65,39 @@ public class BlobService : IBlobService
         return result;
     }
 
+    /// <summary>
+    /// Retrieves a blob from the server.
+    /// </summary>
+    /// <param name="did">The DID of the blob owner.</param>
+    /// <param name="cid">The CID of the blob.</param>
+    /// <param name="cancellationToken">A token to cancel the request.</param>
+    /// <returns>The binary data and content type of the blob.</returns>
     public async Task<(byte[] Data, string ContentType)> GetBlobAsync(string did, string cid, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        const string endpoint = "com.atproto.sync.getBlob";
+        var parameters = new Dictionary<string, string>
+        {
+            ["did"] = did,
+            ["cid"] = cid
+        };
+        
+        var request = new HttpRequestMessage(HttpMethod.Get, 
+            $"{endpoint}?{string.Join("&", parameters.Select(kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value)}"))}");
+        
+        // Add authentication if available
+        if (_client.GetAccessToken() != null)
+        {
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _client.GetAccessToken());
+        }
+        
+        var response = await _client.SendRawRequestAsync(request, cancellationToken).ConfigureAwait(false);
+        
+        // Get the content type from the response headers
+        string contentType = response.Content.Headers.ContentType?.MediaType ?? "application/octet-stream";
+        
+        // Read the binary data
+        var data = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+        
+        return (data, contentType);
     }
 }

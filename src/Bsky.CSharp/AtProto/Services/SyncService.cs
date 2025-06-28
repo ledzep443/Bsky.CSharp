@@ -105,11 +105,50 @@ public class SyncService : ISyncService
 
     public async Task<string> GetRepoHeadAsync(string did, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        // Get the repository head CID
+        var parameters = new Dictionary<string, string>
+        {
+            ["did"] = did
+        };
+        
+        // This endpoint might return a repo snapshot with the head information
+        var response = await _client.GetAsync<RepoHeadResponse>(
+            GetRepoEndpoint, 
+            parameters, 
+            cancellationToken)
+            .ConfigureAwait(false);
+        
+        return response.Head;
     }
 
     public async Task<byte[]> GetCommitAsync(string did, string cid, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        // Get blocks (including a specific commit) from a repository
+        var parameters = new Dictionary<string, string>
+        {
+            ["did"] = did,
+            ["cid"] = cid
+        };
+        
+        // Similar to GetBlobAsync, this returns raw binary data
+        var request = new HttpRequestMessage(HttpMethod.Get, _client.BuildUri(GetBlocksEndpoint, parameters));
+        
+        if (_client.GetAccessToken() != null)
+        {
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _client.GetAccessToken());
+        }
+        
+        var response = await _client.SendRawRequestAsync(request, cancellationToken).ConfigureAwait(false);
+        
+        return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+    }
+    
+    /// <summary>
+    /// Response class for GetRepoHead endpoint 
+    /// </summary>
+    private class RepoHeadResponse
+    {
+        public string Root { get; set; }
+        public string Head { get; set; }
     }
 }

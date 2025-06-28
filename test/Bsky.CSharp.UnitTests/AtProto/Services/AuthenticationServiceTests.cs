@@ -100,6 +100,8 @@ public class AuthenticationServiceTests
         
         // Verify access token was set in client
         Assert.Equal("test-access-token", _client.GetAccessToken());
+        // Verify refresh token was also stored (adding this check)
+        Assert.Equal("test-refresh-token", _client.GetRefreshToken());
     }
 
     [Fact]
@@ -148,6 +150,96 @@ public class AuthenticationServiceTests
         Assert.EndsWith("com.atproto.server.deleteSession", request.RequestUri.ToString());
         
         // Verify auth token was cleared
+        Assert.Null(_client.GetAccessToken());
+    }
+
+    [Fact]
+    public async Task RefreshSessionAsync_WithRefreshToken_CallsClientWithCorrectParameters()
+    {
+        // Arrange
+        const string refreshToken = "test-refresh-token";
+
+        // Act
+        var result = await _service.RefreshSessionAsync(refreshToken);
+
+        // Assert
+        // Verify result
+        Assert.Equal("new-access-token", result.AccessToken);
+        Assert.Equal("new-refresh-token", result.RefreshToken);
+        Assert.Equal("did:plc:test", result.Did);
+        
+        // Verify request
+        Assert.True(_handler.ProcessedRequests.Count > 0);
+        var request = _handler.ProcessedRequests.Last();
+        Assert.Equal(HttpMethod.Post, request.Method);
+        Assert.EndsWith("com.atproto.server.refreshSession", request.RequestUri.ToString());
+        
+        // Verify auth header contains refresh token
+        Assert.True(request.Headers.Authorization != null);
+        Assert.Equal("Bearer", request.Headers.Authorization.Scheme);
+        Assert.Equal(refreshToken, request.Headers.Authorization.Parameter);
+    }
+
+    [Fact]
+    public async Task RefreshSessionAsync_NoParameters_UsesClientRefreshToken()
+    {
+        // Arrange
+        const string refreshToken = "test-refresh-token";
+        _client.SetRefreshToken(refreshToken);
+
+        // Act
+        var result = await _service.RefreshSessionAsync();
+
+        // Assert
+        // Verify result
+        Assert.Equal("new-access-token", result.AccessToken);
+        Assert.Equal("new-refresh-token", result.RefreshToken);
+        
+        // Verify request
+        Assert.True(_handler.ProcessedRequests.Count > 0);
+        var request = _handler.ProcessedRequests.Last();
+        Assert.Equal(HttpMethod.Post, request.Method);
+        Assert.EndsWith("com.atproto.server.refreshSession", request.RequestUri.ToString());
+        
+        // Verify auth header contains refresh token
+        Assert.True(request.Headers.Authorization != null);
+        Assert.Equal("Bearer", request.Headers.Authorization.Scheme);
+        Assert.Equal(refreshToken, request.Headers.Authorization.Parameter);
+    }
+
+    [Fact]
+    public async Task RefreshSessionAsync_NoRefreshToken_ThrowsException()
+    {
+        // Arrange
+        _client.ClearAuth(); // Clear any tokens
+
+        // Act/Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _service.RefreshSessionAsync());
+    }
+    
+    [Fact]
+    public async Task DeleteSessionAsync_CallsCorrectEndpoint()
+    {
+        // Arrange
+        const string accessToken = "test-access-token";
+        _client.SetAuth(accessToken);
+
+        // Act
+        await _service.DeleteSessionAsync();
+
+        // Assert
+        // Verify request
+        Assert.True(_handler.ProcessedRequests.Count > 0);
+        var request = _handler.ProcessedRequests.Last();
+        Assert.Equal(HttpMethod.Post, request.Method);
+        Assert.EndsWith("com.atproto.server.deleteSession", request.RequestUri.ToString());
+        
+        // Verify auth header contains access token
+        Assert.True(request.Headers.Authorization != null);
+        Assert.Equal("Bearer", request.Headers.Authorization.Scheme);
+        Assert.Equal(accessToken, request.Headers.Authorization.Parameter);
+        
+        // Verify token was cleared
         Assert.Null(_client.GetAccessToken());
     }
 }

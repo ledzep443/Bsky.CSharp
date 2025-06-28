@@ -12,6 +12,7 @@ public class XrpcClient : IXrpcClient
     private readonly HttpClient _httpClient;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private string? _accessToken;
+    private string? _refreshToken;
     
     /// <summary>
     /// Creates a new XRPC client.
@@ -46,11 +47,30 @@ public class XrpcClient : IXrpcClient
     }
     
     /// <summary>
+    /// Gets the current refresh token.
+    /// </summary>
+    /// <returns>The current refresh token, or null if not set.</returns>
+    public string? GetRefreshToken()
+    {
+        return _refreshToken;
+    }
+    
+    /// <summary>
+    /// Sets the refresh token for session renewal.
+    /// </summary>
+    /// <param name="refreshToken">The refresh token to store.</param>
+    public void SetRefreshToken(string refreshToken)
+    {
+        _refreshToken = refreshToken;
+    }
+    
+    /// <summary>
     /// Clears the authentication token.
     /// </summary>
     public void ClearAuth()
     {
         _accessToken = null;
+        _refreshToken = null;
     }
     
     /// <summary>

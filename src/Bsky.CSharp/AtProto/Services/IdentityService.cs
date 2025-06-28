@@ -46,11 +46,20 @@ public class IdentityService : IIdentityService
 
     public async Task UpdateHandleAsync(string handle, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        const string endpoint = "com.atproto.identity.updateHandle";
+        var request = new { handle };
+        
+        await _client.PostAsync<object>(
+            endpoint,
+            request,
+            cancellationToken)
+            .ConfigureAwait(false);
     }
 
     async Task<Did> IIdentityService.ResolveHandleAsync(string handle, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        // Call the public method and convert the result to a Did object
+        var didString = await ResolveHandleAsync(handle, cancellationToken).ConfigureAwait(false);
+        return new Did { DidValue = didString };
     }
 }

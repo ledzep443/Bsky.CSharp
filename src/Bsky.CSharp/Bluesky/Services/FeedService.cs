@@ -21,7 +21,8 @@ public class FeedService : IFeedService
     public async Task<Feed> GetTimelineAsync(int? limit = null, string? cursor = null,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        // This method should be an alias for GetHomeTimelineAsync
+        return await GetHomeTimelineAsync(limit, cursor, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -76,7 +77,23 @@ public class FeedService : IFeedService
     public async Task<Feed> SearchPostsAsync(string query, int? limit = null, string? cursor = null,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        const string endpoint = "app.bsky.feed.searchPosts";
+        var parameters = new Dictionary<string, string>
+        {
+            ["q"] = query
+        };
+        
+        if (limit.HasValue)
+        {
+            parameters["limit"] = limit.Value.ToString();
+        }
+        
+        if (!string.IsNullOrEmpty(cursor))
+        {
+            parameters["cursor"] = cursor;
+        }
+        
+        return await _client.GetAsync<Feed>(endpoint, parameters, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />

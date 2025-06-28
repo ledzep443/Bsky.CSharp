@@ -36,21 +36,49 @@ public class ServerService : IServerService
 
     public async Task<ServerInfo> GetServerInfoAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        // This is just an alias for DescribeServerAsync to match naming conventions in other APIs
+        return await DescribeServerAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async Task<AppPassword> CreateAppPasswordAsync(string name, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        const string endpoint = "com.atproto.server.createAppPassword";
+        var request = new { name };
+        
+        return await _client.PostAsync<object, AppPassword>(
+            endpoint, 
+            request, 
+            cancellationToken)
+            .ConfigureAwait(false);
     }
 
     public async Task<List<AppPassword>> ListAppPasswordsAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        const string endpoint = "com.atproto.server.listAppPasswords";
+        
+        var response = await _client.GetAsync<AppPasswordsResponse>(
+            endpoint, 
+            null, 
+            cancellationToken)
+            .ConfigureAwait(false);
+        
+        return response.Passwords;
     }
 
     public async Task RevokeAppPasswordAsync(string name, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        const string endpoint = "com.atproto.server.revokeAppPassword";
+        var request = new { name };
+        
+        await _client.PostAsync<object>(
+            endpoint, 
+            request, 
+            cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    private class AppPasswordsResponse
+    {
+        public List<AppPassword> Passwords { get; set; } = new List<AppPassword>();
     }
 }

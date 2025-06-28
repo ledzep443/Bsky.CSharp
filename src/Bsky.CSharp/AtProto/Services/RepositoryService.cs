@@ -58,17 +58,6 @@ public class RepositoryService : IRepositoryService
             .ConfigureAwait(false);
     }
 
-    public async Task<T> GetRecordAsync<T>(string repo, string collection, string rkey, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    async Task<RecordRef> IRepositoryService.PutRecordAsync(string repo, string collection, string rkey, object record, bool validate,
-        CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
     /// <summary>
     /// Gets a record from a repository.
     /// </summary>
@@ -196,5 +185,53 @@ public class RepositoryService : IRepositoryService
             request, 
             cancellationToken)
             .ConfigureAwait(false);
+    }
+
+    public async Task<T> GetRecordAsync<T>(string repo, string collection, string rkey, CancellationToken cancellationToken = default)
+    {
+        var parameters = new Dictionary<string, string>
+        {
+            ["repo"] = repo,
+            ["collection"] = collection,
+            ["rkey"] = rkey
+        };
+        
+        var response = await _client.GetAsync<RecordWrapper<T>>(
+            GetRecordEndpoint, 
+            parameters, 
+            cancellationToken)
+            .ConfigureAwait(false);
+        
+        return response.Value;
+    }
+
+    async Task<RecordRef> IRepositoryService.PutRecordAsync(string repo, string collection, string rkey, object record, bool validate,
+        CancellationToken cancellationToken)
+    {
+        var request = new
+        {
+            Repo = repo,
+            Collection = collection,
+            Rkey = rkey,
+            Record = record,
+            Validate = validate
+        };
+        
+        return await _client.PostAsync<object, RecordRef>(
+            PutRecordEndpoint, 
+            request, 
+            cancellationToken)
+            .ConfigureAwait(false);
+    }
+    
+    /// <summary>
+    /// Wrapper class to help with generic deserialization from the record endpoint
+    /// </summary>
+    /// <typeparam name="T">The type of record value</typeparam>
+    private class RecordWrapper<T>
+    {
+        public string Uri { get; set; }
+        public string Cid { get; set; }
+        public T Value { get; set; }
     }
 }

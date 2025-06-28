@@ -20,7 +20,19 @@ public interface IXrpcClient
     void SetAuth(string accessToken);
     
     /// <summary>
-    /// Clears the authentication token.
+    /// Gets the current refresh token.
+    /// </summary>
+    /// <returns>The current refresh token, or null if not set.</returns>
+    string? GetRefreshToken();
+    
+    /// <summary>
+    /// Sets the refresh token for session renewal.
+    /// </summary>
+    /// <param name="refreshToken">The refresh token to store.</param>
+    void SetRefreshToken(string refreshToken);
+    
+    /// <summary>
+    /// Clears both the access token and refresh token.
     /// </summary>
     void ClearAuth();
     

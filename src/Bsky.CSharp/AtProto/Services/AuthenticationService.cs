@@ -43,15 +43,25 @@ public class AuthenticationService : IAuthenticationService
             cancellationToken)
             .ConfigureAwait(false);
         
-        // Set the access token in the client for subsequent requests
-        _client.SetAuth(response.AccessToken);
+        // Set both the access token and refresh token in the client for subsequent requests
+        _client.SetAuth(response.AccessToken!);
+        _client.SetRefreshToken(response.RefreshToken!);
         
         return response;
     }
 
     public async Task<ServiceAuthToken> RefreshSessionAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        // This implementation uses the current client's refresh token
+        // It calls the overloaded method that accepts a refresh token
+        var refreshToken = _client.GetRefreshToken();
+        
+        if (string.IsNullOrEmpty(refreshToken))
+        {
+            throw new InvalidOperationException("No refresh token available. You must create a session first.");
+        }
+        
+        return await RefreshSessionAsync(refreshToken, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -75,8 +85,9 @@ public class AuthenticationService : IAuthenticationService
                 cancellationToken)
                 .ConfigureAwait(false);
             
-            // Set the new access token in the client
-            _client.SetAuth(response.AccessToken);
+            // Set the new access token and refresh token in the client
+            _client.SetAuth(response.AccessToken!);
+            _client.SetRefreshToken(response.RefreshToken!);
             
             return response;
         }
