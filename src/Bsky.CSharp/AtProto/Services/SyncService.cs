@@ -148,7 +148,7 @@ public class SyncService : ISyncService
     /// </summary>
     private class RepoHeadResponse
     {
-        public string Root { get; set; }
-        public string Head { get; set; }
+        public string Root { get; set; } = string.Empty;
+        public string Head { get; set; } = string.Empty;
     }
 }

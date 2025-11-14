@@ -13,12 +13,12 @@ public class SessionCreateRequest
     /// </summary>
     [JsonPropertyName("identifier")]
     [Required]
-    public string Identifier { get; set; }
+    public string Identifier { get; set; } = string.Empty;
     
     /// <summary>
     /// The password for authentication.
     /// </summary>
     [JsonPropertyName("password")]
     [Required]
-    public string Password { get; set; }
+    public string Password { get; set; } = string.Empty;
 }

@@ -230,8 +230,8 @@ public class RepositoryService : IRepositoryService
     /// <typeparam name="T">The type of record value</typeparam>
     private class RecordWrapper<T>
     {
-        public string Uri { get; set; }
-        public string Cid { get; set; }
-        public T Value { get; set; }
+        public string Uri { get; set; } = string.Empty;
+        public string Cid { get; set; } = string.Empty;
+        public T Value { get; set; } = default(T);
     }
 }
