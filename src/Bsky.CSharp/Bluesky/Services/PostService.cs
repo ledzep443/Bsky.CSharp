@@ -66,7 +66,7 @@ public class PostService : IPostService
             var blob = await UploadImageAsync(image.Data, image.ContentType, cancellationToken);
             uploadedImages.Add(new Image
             {
-                ImageUrl = blob.Blob.Ref!.Link,
+                ImageUrl = blob?.Blob?.Ref?.Link ?? string.Empty,
                 Alt = image.AltText ?? string.Empty,
                 AspectRatio = image.AspectRatio
             });
@@ -143,7 +143,7 @@ public class PostService : IPostService
         BlobRef blob = await UploadImageAsync(thumbnailData, contentType, cancellationToken);
         return new EmbedExternalThumb
         {
-            Uri = blob.Blob.Ref!.Link,
+            Uri = blob?.Blob?.Ref!.Link ?? string.Empty,
             MimeType = contentType
         };
     }

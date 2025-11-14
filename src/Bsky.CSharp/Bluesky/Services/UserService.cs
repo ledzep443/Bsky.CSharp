@@ -75,7 +75,7 @@ public class UserService : IUserService
             
             profileRecord.Avatar = new BlobReference
             {
-                Cid = avatarBlob.Blob.Ref!.Link,
+                Cid = avatarBlob?.Blob?.Ref?.Link ?? string.Empty,
                 MimeType = update.AvatarImageContentType ?? "image/jpeg"
             };
         }
@@ -90,7 +90,7 @@ public class UserService : IUserService
             
             profileRecord.Banner = new BlobReference
             {
-                Cid = bannerBlob.Blob.Ref!.Link,
+                Cid = bannerBlob?.Blob?.Ref?.Link ?? string.Empty,
                 MimeType = update.BannerImageContentType ?? "image/jpeg"
             };
         }
@@ -217,7 +217,7 @@ public class UserService : IUserService
         ActorsResponse follows = await GetFollowsAsync(session.Did, 100, null, cancellationToken);
         Actor? followRecord = follows.Actors.FirstOrDefault(a => 
             a.Did == user || 
-            a.Handle.Equals(user, StringComparison.OrdinalIgnoreCase));
+            (a?.Handle?.Equals(user, StringComparison.OrdinalIgnoreCase) ?? false));
         
         if (followRecord == null)
         {
