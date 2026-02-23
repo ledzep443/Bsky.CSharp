@@ -153,39 +153,7 @@ public class RepositoryService : IRepositoryService
             .ConfigureAwait(false);
     }
     
-    /// <summary>
-    /// Updates or creates a record in a repository.
-    /// </summary>
-    /// <param name="repo">The repository DID.</param>
-    /// <param name="collection">The NSID of the record collection.</param>
-    /// <param name="rkey">The record key.</param>
-    /// <param name="record">The record data.</param>
-    /// <param name="validate">Whether to validate the record.</param>
-    /// <param name="cancellationToken">A token to cancel the request.</param>
-    /// <returns>A task representing the asynchronous operation.</returns>
-    public async Task PutRecordAsync(
-        string repo, 
-        string collection, 
-        string rkey, 
-        object record, 
-        bool validate = true, 
-        CancellationToken cancellationToken = default)
-    {
-        var request = new
-        {
-            Repo = repo,
-            Collection = collection,
-            Rkey = rkey,
-            Record = record,
-            Validate = validate
-        };
-        
-        await _client.PostAsync<object>(
-            PutRecordEndpoint, 
-            request, 
-            cancellationToken)
-            .ConfigureAwait(false);
-    }
+    
 
     public async Task<T> GetRecordAsync<T>(string repo, string collection, string rkey, CancellationToken cancellationToken = default)
     {
@@ -205,7 +173,7 @@ public class RepositoryService : IRepositoryService
         return response.Value;
     }
 
-    async Task<RecordRef> IRepositoryService.PutRecordAsync(string repo, string collection, string rkey, object record, bool validate,
+    public async Task<RecordRef> PutRecordAsync(string repo, string collection, string rkey, object record, bool validate,
         CancellationToken cancellationToken)
     {
         var request = new
