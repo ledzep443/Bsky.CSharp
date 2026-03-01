@@ -1,6 +1,6 @@
 namespace Bsky.AspNetCore.DependencyInjection.Configuration;
 
-public class BskySettings
+public class BlueskyOptions
 {
     public string BaseUrl { get; set; } = "https://bsky.social";
     public int Timeout { get; set; } = 10000;

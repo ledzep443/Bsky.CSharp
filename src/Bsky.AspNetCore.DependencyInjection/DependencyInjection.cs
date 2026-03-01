@@ -3,19 +3,29 @@ using Bsky.CSharp.AtProto.Services;
 using Bsky.CSharp.Bluesky.Services;
 using Bsky.CSharp.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Bsky.AspNetCore.DependencyInjection;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddBluesky(this IServiceCollection services, Func<IServiceProvider, BskySettings> settingsFactory)
+    /// <summary>
+    /// Registers Bluesky-related services and configuration for dependency injection.
+    /// </summary>
+    /// <param name="services">The service collection to add the services to.</param>
+    /// <param name="configureOptions">An optional configuration action to customize BlueskyOptions.</param>
+    /// <returns>The updated service collection with the Bluesky services added.</returns>
+    public static IServiceCollection AddBluesky(this IServiceCollection services,
+        Action<BlueskyOptions>? configureOptions = null)
     {
-        services.AddSingleton(settingsFactory);
+        services.AddOptions<BlueskyOptions>()
+            .BindConfiguration(BlueskyConstants.BlueskySection)
+            .Configure(options => configureOptions?.Invoke(options));
 
         services.AddHttpClient<IXrpcClient, XrpcClient>(BlueskyConstants.BlueskyClientName)
             .ConfigureHttpClient((serviceProvider, client) =>
             {
-                BskySettings settings = settingsFactory(serviceProvider);
+                BlueskyOptions settings = serviceProvider.GetRequiredService<IOptions<BlueskyOptions>>().Value;
                 client.BaseAddress = new Uri(settings.BaseUrl);
                 client.Timeout = TimeSpan.FromMilliseconds(settings.Timeout);
             });
