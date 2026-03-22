@@ -206,7 +206,7 @@ public class RepositoryServiceTests
         var record = new { Text = "Updated post" };
 
         // Act
-        await _service.PutRecordAsync(repo, collection, rkey, record);
+        await _service.PutRecordAsync(repo, collection, rkey, record, false, CancellationToken.None);
 
         // Assert
         // Verify request
