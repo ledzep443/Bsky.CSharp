@@ -1,13 +1,14 @@
 ﻿<Solution>
   <Folder Name="/Solution Items/">
+    <File Path=".github\workflows\dotnet.yml" />
     <File Path=".gitignore" />
     <File Path="README.md" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src\Bsky.AspNetCore.DependencyInjection\Bsky.AspNetCore.DependencyInjection.csproj" Type="Classic C#" />
-    <Project Path="src\Bsky.CSharp\Bsky.CSharp.csproj" Type="Classic C#" />
+    <Project Path="src\Bsky.AspNetCore.DependencyInjection\Bsky.AspNetCore.DependencyInjection.csproj" Type="C#" />
+    <Project Path="src\Bsky.CSharp\Bsky.CSharp.csproj" Type="C#" />
   </Folder>
   <Folder Name="/test/">
-    <Project Path="test\Bsky.CSharp.UnitTests\Bsky.CSharp.UnitTests.csproj" Type="Classic C#" />
+    <Project Path="test\Bsky.CSharp.UnitTests\Bsky.CSharp.UnitTests.csproj" Type="C#" />
   </Folder>
 </Solution>
