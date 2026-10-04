@@ -28,7 +28,8 @@ public static class DependencyInjection
                 BlueskyOptions settings = serviceProvider.GetRequiredService<IOptions<BlueskyOptions>>().Value;
                 client.BaseAddress = new Uri(settings.BaseUrl);
                 client.Timeout = TimeSpan.FromMilliseconds(settings.Timeout);
-            });
+            })
+            .AddStandardResilienceHandler();
         services.AddTransient<IAuthenticationService, AuthenticationService>();
         services.AddTransient<IBlobService, BlobService>();
         services.AddTransient<IIdentityService, IdentityService>();
